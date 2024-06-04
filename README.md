@@ -1,1 +1,1 @@
-# ASR_for_egyptian_language
+# ASR_for_egyptian_dialect
