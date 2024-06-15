@@ -2,18 +2,22 @@ import csv
 import argparse
 import os 
 
-def find_transcript(audio_file, csv_file):
+def load_transcripts(csv_file):
+    transcripts = {}
     with open(csv_file, 'r') as f:
         reader = csv.reader(f)
         for row in reader:
-            if row[0] == audio_file:
-                return row[1]
-    return None
+            audio_file = row[0]
+            transcript = row[1]
+            transcripts[audio_file] = transcript
+    return transcripts
 
 def create_transcript_file(tsv_file, csv_file, output_file):
     output_dir = os.path.dirname(output_file)
     if output_dir and not os.path.exists(output_dir):
         os.makedirs(output_dir)
+
+    transcripts = load_transcripts(csv_file)
 
     with open(tsv_file, 'r') as f, open(output_file, 'w') as out:
         reader = csv.reader(f, delimiter='\t')
@@ -22,7 +26,7 @@ def create_transcript_file(tsv_file, csv_file, output_file):
             audio_file = row[0].split(' ')[0]
             audio_file = audio_file.split('\\')[-1]
             audio_file = audio_file.replace('.wav', '')
-            transcript = find_transcript(audio_file, csv_file)
+            transcript = transcripts.get(audio_file)
             if transcript is not None:
                 out.write(transcript + '\n')
 
