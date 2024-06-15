@@ -40,5 +40,6 @@ if __name__ == "__main__":
     parser.add_argument('--input_dir', type=str, help='The directory containing .wav files.')
     parser.add_argument('--output_dir', type=str, help='The directory to save the speaker embeddings.')
     args = parser.parse_args()
+    os.system('pip install git+https://github.com/speechbrain/speechbrain.git@develop')
 
     get_speaker_embeddings(args.input_dir, args.output_dir)
