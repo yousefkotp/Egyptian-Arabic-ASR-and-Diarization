@@ -1,4 +1,4 @@
 data/*
 !data/*.csv
-
-pretrained_models/*
+!data/*.tsv
+!data/*.txt
