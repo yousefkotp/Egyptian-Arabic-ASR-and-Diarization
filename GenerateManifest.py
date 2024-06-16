@@ -19,6 +19,11 @@ def create_manifest(audio_dir, audio_csv, embedding_dir, output_file):
         embedding_dir (str): The directory containing embedding files.
         output_file (str): The path to the output tsv file.
     """
+    # Check if the output directory exists and create it if it doesn't
+    output_dir = os.path.dirname(output_file)
+    if output_dir and not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+
     with open(output_file, 'w', newline='') as f:
         writer = csv.writer(f, delimiter='\t')
         writer.writerow(['/'])
@@ -41,7 +46,6 @@ def create_manifest(audio_dir, audio_csv, embedding_dir, output_file):
             with wave.open(audio_path, 'rb') as wav_file:
                 n_samples = wav_file.getnframes()
             writer.writerow([os.path.abspath(audio_path), n_samples, os.path.abspath(os.path.join(embedding_dir, embedding_file))])
-
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Create a manifest file in the form acceptable by wav2vec2.0.')
     parser.add_argument('--audio_dir', type=str, required=True, help='The directory containing audio files.')
