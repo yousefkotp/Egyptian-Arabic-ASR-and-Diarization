@@ -24,7 +24,7 @@ def create_transcript_file(tsv_file, csv_file, output_file):
         next(reader)  # Skip the header row
         for row in reader:
             audio_file = row[0].split(' ')[0]
-            audio_file = audio_file.split('\\')[-1]
+            audio_file = audio_file.split('/')[-1]
             audio_file = audio_file.replace('.wav', '')
             transcript = transcripts.get(audio_file)
             if transcript is not None:
