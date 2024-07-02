@@ -1,6 +1,7 @@
 import argparse
 
 from noise_removal.CleanUNet import CleanUNet
+from noise_removal.FastFullSubNet import FastFullSubNet
 import torch
 import soundfile as sf
 import os
@@ -32,7 +33,7 @@ def load_speech_enhancer(ckpt_path):
         "tsfm_d_model": 512,
         "tsfm_d_inner": 2048
     }
-    enhancement_model = CleanUNet(**enhancement_params).to(device)
+    enhancement_model = FastFullSubNet(**enhancement_params).to(device)
     enhancement_model.load_state_dict(enhancement_ckpt['model_state_dict'])
     enhancement_model.eval()
 
@@ -47,11 +48,21 @@ def load_asr_model(ckpt_path):
 
 def create_parser():
     parser = argparse.ArgumentParser(description="ASR Inference")
-    parser.add_argument("--asr_model", type=str, help="Path to the ASR model chekpoint", default="asr_model.ckpt")
-    parser.add_argument("--enhancement_model", type=str, help="Path to the speech enhancement model chekpoint", default="noise_removal/pretrained.pkl")
+    parser.add_argument("--asr_model", type=str, help="Path to the ASR model checkpoint", default="asr_model.ckpt")
+    parser.add_argument("--enhancement_model", type=str, help="Path to the speech enhancement model chekpoint")
     parser.add_argument("--data_dir", type=str, help="Path to the directory containing test data")
-    parser.add_argument("--output", type=str, help="Path to the output file")
+    parser.add_argument("--output", type=str, help="Path to the output file", default="results.csv")
     return parser
+
+def infere_enhanced(model, audio, enahncer=None):
+
+    clean = enahncer(torch.Tensor(audio).unsqueeze(0).unsqueeze(0).to(device)).squeeze()
+
+    return model.transcribe([clean])
+
+
+def infere(model, audio, enahncer=None):    
+    return  model.transcribe([audio])
 
 if __name__ == "__main__":
 
@@ -59,7 +70,13 @@ if __name__ == "__main__":
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    enhancement_model = load_speech_enhancer(args.enhancement_model)
+    inference_method = infere
+    enhancement_model = None
+    
+    if args.enhancement_model is not None:
+        enhancement_model = load_speech_enhancer()
+        inference_method = infere_enhanced
+
 
 
 
@@ -71,11 +88,11 @@ if __name__ == "__main__":
         fp.write("audio,transcript\n")
 
 
+
     for filename in os.listdir(data_dir):
         audio, sr = sf.read(os.path.join(data_dir, filename), dtype='float32')
         with torch.no_grad():
-            clean = enhancement_model(torch.Tensor(audio).unsqueeze(0).unsqueeze(0).to(device)).squeeze()
-            rv = asr_model.transcribe([clean])
+            rv = inference_method(model=asr_model, audio=audio, enahncer=enhancement_model)
         with open("results.csv", "a+") as fp:
             fp.write(f"{os.path.splitext(os.path.basename(filename))[0]},{rv[0]}\n")
 
