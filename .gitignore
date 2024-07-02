@@ -2,3 +2,5 @@ data/*
 !data/*.csv
 !data/*.tsv
 !data/*.txt
+out.txt
+text_corpus/*
