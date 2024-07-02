@@ -55,19 +55,19 @@ def create_parser():
 
 if __name__ == "__main__":
 
-    parser = create_parser()
+    args = create_parser().parse_args()
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    enhancement_model = load_speech_enhancer(parser.enhancement_model)
+    enhancement_model = load_speech_enhancer(args.enhancement_model)
 
 
 
-    data_dir = parser.data_dir
+    data_dir = args.data_dir
 
-    asr_model = load_asr_model(parser.asr_model)
+    asr_model = load_asr_model(args.asr_model)
 
-    with open(parser.output, "w+", encoding='utf-8') as fp:
+    with open(args.output, "w+", encoding='utf-8') as fp:
         fp.write("audio,transcript\n")
 
 
