@@ -74,7 +74,7 @@ if __name__ == "__main__":
     enhancement_model = None
     
     if args.enhancement_model is not None:
-        enhancement_model = load_speech_enhancer()
+        enhancement_model = load_speech_enhancer(args.enhancement_model)
         inference_method = infere_enhanced
 
 
