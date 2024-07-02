@@ -109,7 +109,7 @@ python utils/generate_label_file.py --tsv_file=data/adapt.tsv --csv_file=data/ad
 ## Contributors
 - [Yousef Kotp](https://github.com/yousefkotp)
 - [Karim Alaa](https://github.com/Karim19Alaa)
-- [Abdelrhman Elnainay](https://github.com/AbdelrhmanElnenaey)
+- [Abdelrahman Elnenaey](https://github.com/AbdelrhmanElnenaey)
 - [Rana Barakat](https://github.com/ranabarakat)
 - [Louai Zahran](https://github.com/LouaiZahran)
 
