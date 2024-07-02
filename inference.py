@@ -34,7 +34,7 @@ def load_speech_enhancer(ckpt_path):
     #     "tsfm_d_inner": 2048
     # }
     enhancement_model = FastFullSubNet().to(device)
-    enhancement_model.load_state_dict(enhancement_ckpt['model_state_dict'])
+    enhancement_model.load_state_dict(enhancement_ckpt['state_dict'])
     enhancement_model.eval()
 
     return enhancement_model
