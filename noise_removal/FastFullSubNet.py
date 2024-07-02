@@ -183,8 +183,8 @@ class FastFullSubNet(FullSubNetBaseModel):
             T - time
             F_s - sub-band frequency
         """
-        noisy = data['noisy']
-        noisy = noisy.squeeze(1)
+        # noisy = data['noisy']
+        noisy = data.squeeze(1)
         mix_mag, _, noisy_real, noisy_imag = stft(noisy, **self.stft_args)
         mix_mag = mix_mag.unsqueeze(1)
         assert mix_mag.dim() == 4
@@ -233,4 +233,4 @@ class FastFullSubNet(FullSubNetBaseModel):
         # Full band CRM mask
         enhanced = self.full_band_crm_mask(output, noisy, noisy_real, noisy_imag)
         enhanced = enhanced.unsqueeze(1)
-        return enhanced, output
+        return enhanced
