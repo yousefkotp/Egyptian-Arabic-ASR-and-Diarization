@@ -20,20 +20,20 @@ def load_speech_enhancer(ckpt_path):
     
     enhancement_ckpt = torch.load(ckpt_path, map_location=device)
 
-    enhancement_params = {
-        "channels_input": 1,
-        "channels_output": 1,
-        "channels_H": 64,
-        "max_H": 768,
-        "encoder_n_layers": 8,
-        "kernel_size": 4,
-        "stride": 2,
-        "tsfm_n_layers": 5,
-        "tsfm_n_head": 8,
-        "tsfm_d_model": 512,
-        "tsfm_d_inner": 2048
-    }
-    enhancement_model = FastFullSubNet(**enhancement_params).to(device)
+    # enhancement_params = {
+    #     "channels_input": 1,
+    #     "channels_output": 1,
+    #     "channels_H": 64,
+    #     "max_H": 768,
+    #     "encoder_n_layers": 8,
+    #     "kernel_size": 4,
+    #     "stride": 2,
+    #     "tsfm_n_layers": 5,
+    #     "tsfm_n_head": 8,
+    #     "tsfm_d_model": 512,
+    #     "tsfm_d_inner": 2048
+    # }
+    enhancement_model = FastFullSubNet().to(device)
     enhancement_model.load_state_dict(enhancement_ckpt['model_state_dict'])
     enhancement_model.eval()
 
