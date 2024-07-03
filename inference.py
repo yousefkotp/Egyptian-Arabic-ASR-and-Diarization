@@ -38,7 +38,7 @@ def load_speech_enhancer(ckpt_path):
         "tsfm_d_inner": 2048
     }
     enhancement_model = CleanUNet(**enhancement_params).to(device)
-    enhancement_model.load_state_dict(enhancement_ckpt)
+    enhancement_model.load_state_dict(enhancement_ckpt['model_state_dict'])
     enhancement_model.eval()
 
     return enhancement_model
