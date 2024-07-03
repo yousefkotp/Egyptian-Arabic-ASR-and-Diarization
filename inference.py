@@ -5,6 +5,8 @@ import torch
 import soundfile as sf
 import os
 
+import gdown
+
 import nemo.collections.asr as nemo_asr
 
 try:
@@ -16,6 +18,9 @@ except ModuleNotFoundError:
 device = 'cpu'
  
 def load_speech_enhancer(ckpt_path):
+    if(not os.path.exists(ckpt_path)):
+        url = "https://drive.google.com/file/d/1GfolCiR80WqM-wkjp0j518-Y1bV371wu/view?usp=drive_link"
+        gdown.download(url, ckpt_path, quiet=False, fuzzy=True)
     
     enhancement_ckpt = torch.load(ckpt_path, map_location=device)
 
@@ -40,6 +45,10 @@ def load_speech_enhancer(ckpt_path):
 
 
 def load_asr_model(ckpt_path):
+    if(not os.path.exists(ckpt_path)):
+        url = "https://drive.google.com/file/d/14_-nKp_bftbOhSDg07kGQ-x-aGbbLa_f/view?usp=drive_link"
+        gdown.download(url, ckpt_path, quiet=False, fuzzy=True)
+
     model = model = nemo_asr.models.EncDecCTCModelBPE.load_from_checkpoint(ckpt_path).to(device)
     model.eval()
     return model
