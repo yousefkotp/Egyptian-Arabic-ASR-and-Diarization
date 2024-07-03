@@ -12,8 +12,7 @@ This repo is a submission for SpeechSquad team for MTC-AIC2 Phase 1 challenge. T
   * [Preprocessing](#preprocessing)
   * [Training](#training)
   * [Inference](#inference)
-  * [Result Model](#result-model)
-  * [Example Usage for Other Funcionalities](#example-usage-for-other-funcionalities)
+  * [Example Usage for Other Functionalities](#example-usage-for-other-functionalities)
     + [Generate Speaker Embeddings](#generate-speaker-embeddings)
     + [Generate Manifest File](#generate-manifest-file)
     + [Generate Labels](#generate-labels)
@@ -96,10 +95,7 @@ python inference.py --asr_model asr_model_.ckpt \
 ```
 For more information, use `inference.py -h`.
 
-## Result Model
-The model can be found on the following [Kaggle Dataset](https://www.kaggle.com/datasets/youseflol2/checkpoint-195) where you can download the model and use it for inference. It is found exactly in `/kaggle/input/checkpoint-195/AIC-ASR/8rb7wmry/checkpoints/epoch=195-step=23991.ckpt` path.
-
-## Example Usage for Other Funcionalities
+## Example Usage for Other Functionalities
 
 ### Generate Speaker Embeddings
 ```bash
