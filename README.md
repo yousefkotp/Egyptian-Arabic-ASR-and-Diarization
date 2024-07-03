@@ -81,7 +81,20 @@ We provide a notebook to train the model on the synthetic dataset and fine-tune 
 - `tokenizer_path`: the path to the tokenizer
 
 ## Inference
-We provide a two notebooks, one with `cleanunet` which act as a preprocessor for the audio and the other without it. You can run `inference.ipynb` to test the model on the test set. The notebook will output the predictions and the WER score. Please do not forget to change the paths to the model and the test data.
+To replicate our inference results, `inference.py` is provided.
+
+The script downlads the checkpoints from google drive, transcribes audio files found in `data_dir` using `enhancement` and `asr` models and outputs the results in `csv format`.
+
+The checkpoints can be found [here](https://drive.google.com/drive/u/6/folders/11-oGdeyNT6pFJaf-_BqVE4PIUoqB2acU).
+### Example Usage
+```bash
+cd ASR_for_egyptian_dialect
+python inference.py --asr_model asr_model_.ckpt \
+                    --enhancement_model cleanunet.pt \
+                    --data_dir /content/test \
+                    --output results.csv
+```
+For more information, use `inference.py -h`.
 
 ## Result Model
 The model can be found on the following [Kaggle Dataset](https://www.kaggle.com/datasets/youseflol2/checkpoint-195) where you can download the model and use it for inference. It is found exactly in `/kaggle/input/checkpoint-195/AIC-ASR/8rb7wmry/checkpoints/epoch=195-step=23991.ckpt` path.
