@@ -46,7 +46,7 @@ def load_speech_enhancer(ckpt_path):
 
 def load_asr_model(ckpt_path):
     if(not os.path.exists(ckpt_path)):
-        url = "https://drive.google.com/file/d/15sl4zYXZu7WA5AJF1SxCeiAPSt679SSa/view?usp=drive_link"
+        url = "https://drive.google.com/file/d/1dI86BSU6sqIP8PzkHrhcc8F57DQJvG1_/view?usp=drive_link"
         gdown.download(url, ckpt_path, quiet=False, fuzzy=True)
 
     model = model = nemo_asr.models.EncDecCTCModelBPE.load_from_checkpoint(ckpt_path).to(device)
