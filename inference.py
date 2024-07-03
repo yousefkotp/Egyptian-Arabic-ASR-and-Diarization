@@ -101,7 +101,7 @@ if __name__ == "__main__":
         audio, sr = sf.read(os.path.join(data_dir, filename), dtype='float32')
         with torch.no_grad():
             rv = inference_method(model=asr_model, audio=audio, enahncer=enhancement_model)
-        with open("results.csv", "a+") as fp:
+        with open(args.output, "a+") as fp:
             fp.write(f"{os.path.splitext(os.path.basename(filename))[0]},{rv[0]}\n")
 
 
