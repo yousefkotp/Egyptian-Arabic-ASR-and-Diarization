@@ -4,3 +4,4 @@ data/*
 !data/*.txt
 out.txt
 text_corpus/*
+__pycache__/
