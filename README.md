@@ -88,6 +88,8 @@ The checkpoints can be found [here](https://drive.google.com/drive/u/6/folders/1
 ### Example Usage
 ```bash
 cd ASR_for_egyptian_dialect
+chmod +x install.sh
+./install.sh
 python inference.py --asr_model asr_model_.ckpt \
                     --enhancement_model cleanunet.pt \
                     --data_dir /content/test \
