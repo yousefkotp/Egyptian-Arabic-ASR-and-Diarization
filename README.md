@@ -4,13 +4,8 @@ This repo is a submission for Speech Squad team for MTC-AIC2 Phase 1 challenge. 
 
 ## Table of Contents
 - [ASR For Egyptian Dialect](#asr-for-egyptian-dialect)
-  * [Installation Guide](#installation-guide)
+  * [Installation Requirements](#installation-guide)
     + [Clone the repository](#clone-the-repository)
-    + [Install and setup virtual environment](#install-and-setup-virtual-environment)
-    + [Activate the virtual environment](#activate-the-virtual-environment)
-    + [Install the required packages](#install-the-required-packages)
-    + [Installing other requirements](#installing-other-requirements)
-    + [Install numpy](#install-numpy)
   * [Dataset](#dataset)
     + [Real](#real)
     + [Synthetic](#synthetic)
