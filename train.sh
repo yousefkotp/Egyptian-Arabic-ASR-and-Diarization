@@ -1,4 +1,4 @@
-#! bin/bash
+#!bin/bash
 
 pip install virtualenv
 virtualenv -p python3.10 venv
