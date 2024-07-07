@@ -13,9 +13,9 @@ import argparse
 from pydub import AudioSegment
 import librosa
 
-def build_manifest(data_path, output_path, split, take=-1):
+def build_manifest(data_path, output_path, csv_path, take=-1):
     with open(output_path, "w+") as fout:
-        with open(f"{data_path}/{split}.csv", "r") as fp:
+        with open(csv_path, "r") as fp:
             header = True
             for line in tqdm(fp):
                 if header:
@@ -37,9 +37,9 @@ def build_manifest(data_path, output_path, split, take=-1):
                 if take == 0:
                     break
 
-def main(train_data_path, adapt_data_path):
-    build_manifest(train_data_path, "train_manifest.json", "train")
-    build_manifest(adapt_data_path, "adapt_manifest.json", "adapt")
+def main(train_csv, train_data_path, adapt_csv, adapt_data_path):
+    build_manifest(train_data_path, "train_manifest.json", train_csv)
+    build_manifest(adapt_data_path, "adapt_manifest.json", adapt_csv)
 
     config_path = 'configs/fast-conformer_ctc_bpe.yaml'
 
@@ -67,9 +67,11 @@ def main(train_data_path, adapt_data_path):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Train and adapt ASR model with specified manifest files.")
+    parser.add_argument("--train_csv", type=str, required=True, help="Path to the training data csv file")
     parser.add_argument("--train_data_path", type=str, required=True, help="Path to the training data folder")
+    parser.add_argument("--adapt_csv", type=str, required=True, help="Path to the adaptation data csv file")
     parser.add_argument("--adapt_data_path", type=str, required=True, help="Path to the adaptation data folder")
     
     args = parser.parse_args()
     
-    main(args.train_data_path, args.adapt_data_path)
+    main(args.train_csv, args.train_data_path, args.adapt_csv, args.adapt_data_path)
