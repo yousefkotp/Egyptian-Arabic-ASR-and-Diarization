@@ -70,6 +70,10 @@ python -m pip install git+https://github.com/NVIDIA/NeMo.git@r2.0.0rc0#egg=nemo_
 sudo apt-get install -y sox libsndfile1 ffmpeg
 ```
 
+- Please note that `sudo apt-get install -y sox libsndfile1 ffmpeg` command only work for `Debian-based Linux distributions`. For windows and MacOS, you can install `sox` and `ffmpeg` using the following links:
+  - [SoX](http://sox.sourceforge.net/)
+  - [FFmpeg](https://ffmpeg.org/)
+
 ### Install numpy
 ```bash
 pip install "numpy<2.0"
