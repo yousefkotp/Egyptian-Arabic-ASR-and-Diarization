@@ -57,8 +57,8 @@ def load_asr_model(ckpt_path):
 def create_parser():
     parser = argparse.ArgumentParser(description="ASR Inference")
     parser.add_argument("--asr_model", type=str, help="Path to the ASR model checkpoint", default="asr_model.ckpt")
-    parser.add_argument("--enhancement_model", type=str, help="Path to the speech enhancement model chekpoint")
-    parser.add_argument("--data_dir", type=str, help="Path to the directory containing test data")
+    parser.add_argument("--enhancement_model", type=str, help="Path to the speech enhancement model chekpoint", default="cleanunet.pt")
+    parser.add_argument("--data_dir", type=str, help="Path to the directory containing test data", default="data/adapt")
     parser.add_argument("--output", type=str, help="Path to the output file", default="results.csv")
     return parser
 
