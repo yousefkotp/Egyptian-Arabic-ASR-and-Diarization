@@ -127,7 +127,7 @@ We believe that there is room for improvement in the tokenizer where we plan to 
 A key component of our preprocessing pipeline is the optional use of [Cleanunet](https://github.com/NVIDIA/CleanUNet) provided by NVIDIA, a model designed for cleaning and enhancing the audio before running speech recognition. The model enhaces the quality of the audio by removing noise and enhancing the speech. The 
 
 ## Training
-We provide a script to train the ASR model using the FastConformer architecture. The script is based on the NVIDIA NeMo toolkit and is provided in the `train.py` file. The script trains the model using the CTC loss function and the Adam optimizer. The model is trained on the synthetic dataset and fine-tuned on the real dataset provided by the competition. You should provide the path to the training and adaptation datasets using the `--train_data_path` and `--adapt_data_path` arguments.
+We provide a script to train the ASR model using the FastConformer architecture. The script is based on the NVIDIA NeMo toolkit and is provided in the `train.py` file. The script trains the model using the CTC loss function and the Adam optimizer. The model is trained on the synthetic dataset and fine-tuned on the real dataset provided by the competition. You should provide the path to the training and adaptation datasets using the `train_csv`, `--train_data_path`, `adapt_csv` and `--adapt_data_path` arguments.
 
 ```bash
 python train.py  --train_csv "data/train.csv" \
