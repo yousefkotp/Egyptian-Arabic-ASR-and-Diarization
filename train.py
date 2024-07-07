@@ -52,24 +52,6 @@ def main(train_data_path, adapt_data_path):
     with open(config_path) as f:
         params = yaml.load(f)
 
-    train_manifest = "train_manifest.json"
-    adapt_manifest = "adapt_manifest.json"
-
-    params['model']['train_ds']['manifest_filepath'] = train_manifest
-    params['model']['train_ds']['batch_size'] = 16
-    params['model']['train_ds']['num_workers'] = 4
-
-    params['model']['validation_ds']['manifest_filepath'] = adapt_manifest
-    params['model']['validation_ds']['batch_size'] = 1
-    params['model']['validation_ds']['num_workers'] = 4
-
-    params['model']['tokenizer']['dir'] = "tokenizer"
-    params['model']['optim']['sched']['warmup_steps'] = 0
-
-    params['model']['optim']['lr'] = 5e-5
-    params['model']['optim']['weight_decay'] = 0
-    params['model']['optim']['sched']['min_lr'] = 1e-7
-
     params['model'].pop('test_ds')
 
     logging.getLogger('nemo_logger').setLevel(logging.ERROR)
