@@ -1,9 +1,16 @@
 # ASR For Egyptian Dialect
 
-This repo is a submission for SpeechSquad team for MTC-AIC2 Phase 1 challenge. The repo contains the code for our experiments conducted to train an ASR model for the Egyptian dialect. We reached a score of `17.406720` (the lower the better) on the test set ranking 7th on the leaderboard. Our approach provides **real-time speech recognition** reaching an average of 62ms without preprocessing and 140ms with preprocessing per audio sample. Our model perform competitively compared to those having better score but with much higher latency. The model is based on the FastConformer architecture and is trained using the CTC loss function. The model is pretrained on a synthetic dataset generated using GPT-4o and OpenAI TTS and fine-tuned on the real dataset provided by the competition.
+This repo is a submission for Speech Squad team for MTC-AIC2 Phase 1 challenge. The repo contains the code for our experiments conducted to train an ASR model for the Egyptian dialect. We reached a score of `17.406720` (the lower the better) on the test set ranking 7th on the leaderboard. Our approach provides **real-time speech recognition** reaching an average of 62ms without preprocessing and 140ms with preprocessing per audio sample. Our model perform competitively compared to those having better score but with much higher latency. The model is based on the FastConformer architecture and is trained using the CTC loss function. The model is pretrained on a synthetic dataset generated using GPT-4o and OpenAI TTS and fine-tuned on the real dataset provided by the competition.
 
 ## Table of Contents
 - [ASR For Egyptian Dialect](#asr-for-egyptian-dialect)
+  * [Installation Guide](#installation-guide)
+    + [Clone the repository](#clone-the-repository)
+    + [Install and setup virtual environment](#install-and-setup-virtual-environment)
+    + [Activate the virtual environment](#activate-the-virtual-environment)
+    + [Install the required packages](#install-the-required-packages)
+    + [Installing other requirements](#installing-other-requirements)
+    + [Install numpy](#install-numpy)
   * [Dataset](#dataset)
     + [Real](#real)
     + [Synthetic](#synthetic)
@@ -12,6 +19,7 @@ This repo is a submission for SpeechSquad team for MTC-AIC2 Phase 1 challenge. T
   * [Preprocessing](#preprocessing)
   * [Training](#training)
   * [Inference](#inference)
+    + [Example Usage](#example-usage)
   * [Example Usage for Other Functionalities](#example-usage-for-other-functionalities)
     + [Generate Speaker Embeddings](#generate-speaker-embeddings)
     + [Generate Manifest File](#generate-manifest-file)
@@ -21,6 +29,51 @@ This repo is a submission for SpeechSquad team for MTC-AIC2 Phase 1 challenge. T
   * [References](#references)
 
 
+## Installation Guide
+
+### Clone the repository
+
+```bash
+git clone https://github.com/AbdelrhmanElnenaey/ASR_for_egyptian_dialect
+cd ASR_for_egyptian_dialect
+```
+
+### Install and setup virtual environment
+
+```bash
+pip install virtualenv
+virtualenv -p python3.10 venv
+```
+
+### Activate the virtual environment
+
+- If you are using Windows:
+```bash
+.\venv\Scripts\activate
+```
+
+- If you are using Linux or MacOS:
+```bash
+source venv/bin/activate
+```
+### Install the required packages
+
+```bash
+pip install -r requirements.txt
+```
+
+### Installing other requirements
+```bash
+pip install boto3 --upgrade
+pip install text-unidecode
+python -m pip install git+https://github.com/NVIDIA/NeMo.git@r2.0.0rc0#egg=nemo_toolkit[asr]
+sudo apt-get install -y sox libsndfile1 ffmpeg
+```
+
+### Install numpy
+```bash
+pip install "numpy<2.0"
+```
 ## Dataset
 
 ### Real
@@ -70,14 +123,11 @@ We believe that there is room for improvement in the tokenizer where we plan to 
 A key component of our preprocessing pipeline is the optional use of [Cleanunet](https://github.com/NVIDIA/CleanUNet) provided by NVIDIA, a model designed for cleaning and enhancing the audio before running speech recognition. The model enhaces the quality of the audio by removing noise and enhancing the speech. The 
 
 ## Training
-We provide a notebook to train the model on the synthetic dataset and fine-tune it on the real dataset. You can run `train.ipynb` to train the model. However, please note that there are some variables needs to be changed in the notebook such as the paths to the data and the model.
+We provide a script to train the ASR model using the FastConformer architecture. The script is based on the NVIDIA NeMo toolkit and is provided in the `train.py` file. The script trains the model using the CTC loss function and the Adam optimizer. The model is trained on the synthetic dataset and fine-tuned on the real dataset provided by the competition. You should provide the path to the training and adaptation datasets using the `--train_data_path` and `--adapt_data_path` arguments.
 
-- `ckpt_path`: the path to save the model checkpoints (optional)
-- `train_manifest_file`: the path to the training manifest file
-- `adapt_manifest_file`: the path to the adaptation manifest file
-- `wandb_project`: the name of the wandb project to log the training process
-- `wandb_key`: the wandb key to log the training process
-- `tokenizer_path`: the path to the tokenizer
+```bash
+python train.py --train_data_path data/train --adapt_data_path data/adapt
+```
 
 ## Inference
 To replicate our inference results, `inference.py` is provided.
@@ -87,10 +137,7 @@ The script downlads the checkpoints from google drive, transcribes audio files f
 The checkpoints can be found [here](https://drive.google.com/drive/u/6/folders/11-oGdeyNT6pFJaf-_BqVE4PIUoqB2acU).
 ### Example Usage
 ```bash
-cd ASR_for_egyptian_dialect
-chmod +x install.sh
-./install.sh
-python inference.py --asr_model asr_model_.ckpt \
+python inference.py --asr_model asr_model.ckpt \
                     --enhancement_model cleanunet.pt \
                     --data_dir /content/test \
                     --output results.csv
