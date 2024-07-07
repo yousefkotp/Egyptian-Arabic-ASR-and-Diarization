@@ -11,11 +11,7 @@ import nemo
 import nemo.collections.asr as nemo_asr
 import argparse
 from pydub import AudioSegment
-
-def get_duration_pydub(filename):
-    audio = AudioSegment.from_file(filename)
-    duration_seconds = len(audio) / 1000.0  # PyDub returns duration in milliseconds
-    return duration_seconds
+import librosa
 
 def build_manifest(data_path, output_path, split, take=-1):
     with open(output_path, "w+") as fout:
@@ -31,7 +27,7 @@ def build_manifest(data_path, output_path, split, take=-1):
                 sample_path = f"{data_path}/{data[0]}.wav"
                 sample = {
                     "audio_filepath": sample_path,
-                    "duration": get_duration_pydub(sample_path),
+                    "duration": librosa.get_duration(filename=sample_path),
                     "text": data[1]
                 }
                 json.dump(sample, fout, ensure_ascii=False)
