@@ -130,7 +130,10 @@ A key component of our preprocessing pipeline is the optional use of [Cleanunet]
 We provide a script to train the ASR model using the FastConformer architecture. The script is based on the NVIDIA NeMo toolkit and is provided in the `train.py` file. The script trains the model using the CTC loss function and the Adam optimizer. The model is trained on the synthetic dataset and fine-tuned on the real dataset provided by the competition. You should provide the path to the training and adaptation datasets using the `--train_data_path` and `--adapt_data_path` arguments.
 
 ```bash
-python train.py --train_data_path data/train --adapt_data_path data/adapt
+python train.py  --train_csv "data/train.csv" \
+                 --train_data_path "data/train" \
+                 --adapt_csv "data/adapt.csv" \
+                 --adapt_data_path "data/adapt"
 ```
 
 ## Inference

@@ -27,7 +27,7 @@ def build_manifest(data_path, output_path, csv_path, take=-1):
                 sample_path = f"{data_path}/{data[0]}.wav"
                 sample = {
                     "audio_filepath": sample_path,
-                    "duration": librosa.get_duration(filename=sample_path),
+                    "duration": librosa.get_duration(path=sample_path),
                     "text": data[1]
                 }
                 json.dump(sample, fout, ensure_ascii=False)
