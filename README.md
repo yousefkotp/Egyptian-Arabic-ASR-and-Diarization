@@ -29,54 +29,13 @@ This repo is a submission for Speech Squad team for MTC-AIC2 Phase 1 challenge. 
   * [References](#references)
 
 
-## Installation Guide
+## Installation Requirements
+The provided scripts runs on Ubuntu and requires Python 3.10.
 
 ### Clone the repository
 
 ```bash
-git clone https://github.com/AbdelrhmanElnenaey/ASR_for_egyptian_dialect
-cd ASR_for_egyptian_dialect
-```
-
-### Install and setup virtual environment
-
-```bash
-pip install virtualenv
-virtualenv -p python3.10 venv
-```
-
-### Activate the virtual environment
-
-- If you are using Windows:
-```bash
-.\venv\Scripts\activate
-```
-
-- If you are using Linux or MacOS:
-```bash
-source venv/bin/activate
-```
-### Install the required packages
-
-```bash
-pip install -r requirements.txt
-```
-
-### Installing other requirements
-```bash
-pip install boto3 --upgrade
-pip install text-unidecode
-python -m pip install git+https://github.com/NVIDIA/NeMo.git@r2.0.0rc0#egg=nemo_toolkit[asr]
-sudo apt-get install -y sox libsndfile1 ffmpeg
-```
-
-- Please note that `sudo apt-get install -y sox libsndfile1 ffmpeg` command only work for `Debian-based Linux distributions`. For windows and MacOS, you can install `sox` and `ffmpeg` using the following links:
-  - [SoX](http://sox.sourceforge.net/)
-  - [FFmpeg](https://ffmpeg.org/)
-
-### Install numpy
-```bash
-pip install "numpy<2.0"
+git clone https://github.com/AbdelrhmanElnenaey/ASR_for_egyptian_dialect.git
 ```
 ## Dataset
 
@@ -127,13 +86,17 @@ We believe that there is room for improvement in the tokenizer where we plan to 
 A key component of our preprocessing pipeline is the optional use of [Cleanunet](https://github.com/NVIDIA/CleanUNet) provided by NVIDIA, a model designed for cleaning and enhancing the audio before running speech recognition. The model enhaces the quality of the audio by removing noise and enhancing the speech. The 
 
 ## Training
-We provide a script to train the ASR model using the FastConformer architecture. The script is based on the NVIDIA NeMo toolkit and is provided in the `train.py` file. The script trains the model using the CTC loss function and the Adam optimizer. The model is trained on the synthetic dataset and fine-tuned on the real dataset provided by the competition. You should provide the path to the training and adaptation datasets using the `--train_data_path` and `--adapt_data_path` arguments.
+We provide a bash script to train the ASR model using the FastConformer architecture. The script is based on the NVIDIA NeMo toolkit and is provided in the `train.sh` file. The script installs the needed packages and trains the model using the CTC loss function and the Adam optimizer. The model is trained on the synthetic dataset and fine-tuned on the real dataset provided by the competition. You should provide the path to the training and adaptation datasets  and their respective csv files.
 
+### Example Usage
+N.B., Exclude comments when running the script.
 ```bash
-python train.py  --train_csv "data/train.csv" \
-                 --train_data_path "data/train" \
-                 --adapt_csv "data/adapt.csv" \
-                 --adapt_data_path "data/adapt"
+cd ASR_for_egyptian_dialect
+chmod +x train.sh
+./train.sh "data/train.csv" \   ## csv file containing the training data filename and transcript
+            "data/train" \      ## directory containing the training data
+            "data/adapt.csv" \  ## csv file containing the adaptation data filename and transcript
+            "data/adapt"        ## directory containing the adaptation data
 ```
 
 ## Inference
@@ -143,11 +106,14 @@ The script downlads the checkpoints from google drive, transcribes audio files f
 
 The checkpoints can be found [here](https://drive.google.com/drive/u/6/folders/11-oGdeyNT6pFJaf-_BqVE4PIUoqB2acU).
 ### Example Usage
+N.B., Exclude comments when running the script.
 ```bash
-python inference.py --asr_model asr_model.ckpt \
-                    --enhancement_model cleanunet.pt \
-                    --data_dir /content/test \
-                    --output results.csv
+cd ASR_for_egyptian_dialect
+chmod +x infere.sh
+./infere.sh asr_model_.ckpt \  ## asr model checkpoint path, if not found will be downloaded
+            cleanunet.pt \     ## speech enhancement model checkpoint path, if not found will be downloaded
+            /content/test \    ## test data directory (data_dir)
+            results.csv        ## output file containing transcription in csv format
 ```
 For more information, use `inference.py -h`.
 
