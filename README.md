@@ -18,6 +18,10 @@ This repo is a submission for Speech Squad team for MTC-AIC2 Phase 1 challenge. 
   * [Tokenizer](#tokenizer)
   * [Preprocessing](#preprocessing)
   * [Synthetic Dataset Generation](#synthetic-dataset-generation)
+    + [Generate Text Corpus using OpenAI](#generate-text-corpus-using-openai)
+    + [Converting Text File into CSV](#converting-text-file-into-csv)
+    + [Generate Synthetic Dataset using OpenAI TTS](#generate-synthetic-dataset-using-openai-tts)
+    + [Resultant Synthetic Dataset](#resultant-synthetic-dataset)
   * [Training](#training)
   * [Inference](#inference)
     + [Example Usage](#example-usage)
@@ -28,6 +32,8 @@ This repo is a submission for Speech Squad team for MTC-AIC2 Phase 1 challenge. 
   * [Contributors](#contributors)
   * [Supervisor](#supervisor)
   * [References](#references)
+
+
 
 
 ## Installation Guide
