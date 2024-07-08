@@ -17,6 +17,7 @@ This repo is a submission for Speech Squad team for MTC-AIC2 Phase 1 challenge. 
     + [Data Filteration](#data-filteration)
   * [Tokenizer](#tokenizer)
   * [Preprocessing](#preprocessing)
+  * [Synthetic Dataset Generation](#synthetic-dataset-generation)
   * [Training](#training)
   * [Inference](#inference)
     + [Example Usage](#example-usage)
@@ -125,6 +126,61 @@ We believe that there is room for improvement in the tokenizer where we plan to 
 ## Preprocessing
 
 A key component of our preprocessing pipeline is the optional use of [Cleanunet](https://github.com/NVIDIA/CleanUNet) provided by NVIDIA, a model designed for cleaning and enhancing the audio before running speech recognition. The model enhaces the quality of the audio by removing noise and enhancing the speech. The 
+
+## Synthetic Dataset Generation
+
+### Generate Text Corpus using OpenAI
+
+The text corpus was generated using a custom Python script that leverages the OpenAI API, specifically utilizing the GPT-4o (omni) model. This approach allowed us to create a diverse and rich set of sentences in Egyptian Arabic, reflecting various aspects of local culture, everyday life, and a wide range of topics. The script ensures the uniqueness of each sentence, focusing on clarity, naturalness, and the inclusion of colloquial expressions to add authenticity.
+
+
+The script `utils/generate_text_corpus.py` performs the following steps to generate the text corpus:
+
+1. **Initialization**: It sets up the OpenAI client using an API key stored in the environment variables. Please make sure to set `OPENAI_API_KEY` environment variable to your OpenAI API key.
+2. **Dynamic Prompting**: For each request, it sends a dynamic prompt to the GPT-4o model. The prompt includes instructions to generate sentences in Egyptian Arabic, covering diverse topics and ensuring each sentence is unique and clear.
+3. **Sentence Generation**: The model generates responses based on the prompt. Each response is then split into individual sentences.
+4. **Uniqueness and Quality Checks**: The script filters out any sentence that is either too short (less than two words) or already present in the set of unique sentences.
+5. **Output**: Unique sentences are written to an output file, `output_sentences.txt`, with each sentence on a new line.
+
+This process repeats until the script reaches the target number of unique sentences, which is set to 30,000 in this case.
+
+
+To generate the text corpus, **ensure you have set the `OPENAI_API_KEY` environment variable to your OpenAI API key.** Then, run the script from your terminal:
+
+```bash
+python utils/generate_text_corpus.py
+```
+
+### Converting Text File into CSV
+The output text file is then converted into a CSV file by adding `transcript` column which is added to the beginning of file. The `.txt` extension is replaced with `.csv` extension too.
+
+### Generate Synthetic Dataset using OpenAI TTS
+
+To generate audio from text transcripts, we developed a Python script named `utils/TTS_OpenAI.py`. This script utilizes the OpenAI API to convert text transcripts into speech, simulating various voices and adjusting the speech speed for a more natural and diverse audio output. The generated audio files are saved in a specified output directory, and a CSV file is updated incrementally with mappings between the audio files and their corresponding transcripts.
+
+The script performs the following steps to generate audio from text:
+
+1. **Reading Transcripts**: It reads transcripts from a CSV file specified by the user. The CSV file must contain a column named 'transcript' with the text intended for speech conversion.
+2. **Voice Selection**: For each transcript, the script randomly selects a voice from a predefined list of voices provided by the OpenAI API. This adds variety to the audio output. The available voices are `alloy`, `echo`, `fable`, `onyx`, `nova`, and `shimmer`.
+3. **Speed Variation**: The speech speed is uniformly sampled between 0.8 and 1.2 times the normal speed, introducing natural variation in the speech tempo.
+4. **Audio Generation**: The OpenAI API's text-to-speech model is invoked with the selected voice, transcript, and speed to generate the speech audio in WAV format.
+5. **Sample Rate Adjustment**: If the desired sample rate differs from the default (24,000 Hz), the script uses `pydub` to adjust the sample rate of the generated audio file to be 16,000 Hz, ensuring compatibility with the ASR model's requirements.
+6. **Output Mapping**: A mapping of audio file names to their corresponding transcripts is appended to a CSV file (`synthetic.csv`) in the output directory.
+
+To use the script, you need to provide the path to the CSV file containing the transcripts, the output directory for the audio files, and optionally, the desired sample rate for the audio files. **Ensure you have set the `OPENAI_API_KEY` environment variable to your OpenAI API key.** Then, run the script from your terminal:
+
+```bash
+python TTS_OpenAI.py --csv_file output_sentences.csv --output_dir data/synthetic --sample_rate 16000
+```
+
+where:
+- `--csv_file`: The path to the CSV file containing the transcripts (generated text corpus after adding `transcript` column).
+- `--output_dir`: The path to the output directory where the audio files will be saved.
+- `--sample_rate`: The desired sample rate for the audio files.
+
+### Resultant Synthetic Dataset
+
+You can find the [synthetic.csv](data/synthetic.csv) file containing the generated transcripts and their corresponding audio files in the `data` directory. Also don't forget to download the audio files from [Google Drive](https://drive.google.com/drive/folders/1jRb0X9_O6p6UOpIyZ2NoxF1_mjYbty4M?usp=sharing).
 
 ## Training
 We provide a script to train the ASR model using the FastConformer architecture. The script is based on the NVIDIA NeMo toolkit and is provided in the `train.py` file. The script trains the model using the CTC loss function and the Adam optimizer. The model is trained on the synthetic dataset and fine-tuned on the real dataset provided by the competition. You should provide the path to the training and adaptation datasets using the `--train_csv`, `--train_data_path`, `--adapt_csv` and `--adapt_data_path` arguments.
