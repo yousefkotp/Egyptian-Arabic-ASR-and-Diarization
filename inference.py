@@ -15,7 +15,7 @@ except ModuleNotFoundError:
     from ruamel_yaml import YAML
 
 
-device = 'cpu'
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
  
 def load_speech_enhancer(ckpt_path):
     if(not os.path.exists(ckpt_path)):
