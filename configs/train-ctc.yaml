@@ -40,7 +40,7 @@ model:
     pin_memory: true
 
   tokenizer:
-    dir: /kaggle/input/tokenizer-bpe-256
+    dir: tokenizer
     type: bpe
 
   preprocessor:
