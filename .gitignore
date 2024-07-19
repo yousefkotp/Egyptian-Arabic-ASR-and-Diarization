@@ -6,3 +6,4 @@ out.txt
 text_corpus/*
 __pycache__/
 lightning_logs/*
+archive/*
