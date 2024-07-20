@@ -9,7 +9,7 @@ model:
   train_ds:
     manifest_filepath: manifest_files/train_manifest.json
     sample_rate: ${model.sample_rate}
-    batch_size: 16
+    batch_size: 32
     shuffle: true
     num_workers: 8
     pin_memory: true
@@ -24,7 +24,7 @@ model:
   validation_ds:
     manifest_filepath: manifest_files/adapt_manifest.json
     sample_rate: ${model.sample_rate}
-    batch_size: 16
+    batch_size: 32
     shuffle: false
     use_start_end_token: false
     num_workers: 8
@@ -125,7 +125,7 @@ model:
     # scheduler setup
     sched:
       name: CosineAnnealing
-      warmup_steps: 15000
+      warmup_steps: 5000
       warmup_ratio: null
       min_lr: 1e-6
 
