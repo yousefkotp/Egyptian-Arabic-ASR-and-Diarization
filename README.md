@@ -1,6 +1,7 @@
 # ASR For Egyptian Dialect
 
-This repo is a submission for Speech Squad team for MTC-AIC2 Phase 1 challenge. The repo contains the code for our experiments conducted to train an ASR model for the Egyptian dialect. We reached a score of `17.406720` (the lower the better) on the test set ranking 7th on the leaderboard. Our approach provides **real-time speech recognition** reaching an average of 62ms without preprocessing and 140ms with preprocessing per audio sample. Our model perform competitively compared to those having better score but with much higher latency. The model is based on the FastConformer architecture and is trained using the CTC loss function. The model is pretrained on a synthetic dataset generated using GPT-4o and OpenAI TTS and fine-tuned on the real dataset provided by the competition.
+This repository is the submission from the Speech Squad team for the MTC-AIC 2 challenge. It contains the code for our experiments in training an Automatic Speech Recognition (ASR) model for the Egyptian dialect. We propose a novel four-stage training pipeline that enabled our model to achieve a Mean Levenshtein Distance score of `10.250869` on the test set, with lower values indicating better performance. Our model utilizes the FastConformer architecture and incorporates both Connectionist Temporal Classification (CTC) and Recurrent Neural Network Transducer (RNN-T). The four stages of our pipeline include pretraining on a synthetic dataset generated using GPT-4o and OpenAI's Text-to-Speech (TTS), followed by training on the real dataset with CTC, further training with RNN-T, and finally fine-tuning on adaptation data. This comprehensive approach allowed us to maximize the model's performance and adaptability to the Egyptian Arabic dialect.
+
 
 ## Table of Contents
 - [ASR For Egyptian Dialect](#asr-for-egyptian-dialect)
@@ -11,20 +12,31 @@ This repo is a submission for Speech Squad team for MTC-AIC2 Phase 1 challenge. 
     + [Install the required packages](#install-the-required-packages)
     + [Installing other requirements](#installing-other-requirements)
     + [Install numpy](#install-numpy)
+    + [Dataset Download & Setup](#dataset-download---setup)
   * [Dataset](#dataset)
     + [Real](#real)
     + [Synthetic](#synthetic)
     + [Data Filteration](#data-filteration)
   * [Tokenizer](#tokenizer)
   * [Preprocessing](#preprocessing)
+  * [Data Augmentation](#data-augmentation)
+    + [Spectrogram Augmentation](#spectrogram-augmentation)
+    + [Dithering](#dithering)
+    + [Exploration of Other Data Augmentation](#exploration-of-other-data-augmentation)
   * [Synthetic Dataset Generation](#synthetic-dataset-generation)
     + [Generate Text Corpus using OpenAI](#generate-text-corpus-using-openai)
     + [Converting Text File into CSV](#converting-text-file-into-csv)
     + [Generate Synthetic Dataset using OpenAI TTS](#generate-synthetic-dataset-using-openai-tts)
     + [Resultant Synthetic Dataset](#resultant-synthetic-dataset)
+  * [Chosen Architecture](#chosen-architecture)
   * [Training](#training)
+    + [1. Pretraining FastConformer-CTC on Synthetic Data](#1-pretraining-fastconformer-ctc-on-synthetic-data)
+    + [2. Training FastConformer-CTC on Real Data](#2-training-fastconformer-ctc-on-real-data)
+    + [3. Training FastConformer-Transducer on Real Data](#3-training-fastconformer-transducer-on-real-data)
+    + [4. Fine-tuning FastConformer-Transducer on Adaptation Data](#4-fine-tuning-fastconformer-transducer-on-adaptation-data)
   * [Inference](#inference)
     + [Example Usage](#example-usage)
+  * [Insights](#insights)
   * [Example Usage for Other Functionalities](#example-usage-for-other-functionalities)
     + [Generate Speaker Embeddings](#generate-speaker-embeddings)
     + [Generate Manifest File](#generate-manifest-file)
@@ -32,8 +44,6 @@ This repo is a submission for Speech Squad team for MTC-AIC2 Phase 1 challenge. 
   * [Contributors](#contributors)
   * [Supervisor](#supervisor)
   * [References](#references)
-
-
 
 
 ## Installation Guide
@@ -85,6 +95,20 @@ sudo apt-get install -y sox libsndfile1 ffmpeg
 ```bash
 pip install "numpy<2.0"
 ```
+
+### Dataset Download & Setup
+Before downloading the datasets, ensure you have sufficient storage space available (~25 GB) and you are connected to a stable internet connection. Datasets are large and may take time to download.
+
+To download the datasets both real and synthetic from Google Drive, run the following commands:
+```python
+python data/download_datasets.py
+```
+
+After downloading the datasets, you have to build the manifest files by running the following command:
+```python
+python data/build_manifest.py
+```
+
 ## Dataset
 
 ### Real
@@ -130,8 +154,33 @@ We explored different tokenizer obtained through `SentencePiece` with a vocab si
 We believe that there is room for improvement in the tokenizer where we plan to explore different tokenizers and vocab sizes in the future.
 
 ## Preprocessing
+To extract features from the raw audio data which is used later by FastConformer model, we use the `MelSpectrogram` feature extractor provided by NVIDIA NeMo. The feature extractor is used to convert the raw audio data into Mel spectrograms. The Mel spectrograms are then normalized and augmented using various techniques to improve the model's performance. We mainly configure the feature extractor with the following parameters:
 
-A key component of our preprocessing pipeline is the optional use of [Cleanunet](https://github.com/NVIDIA/CleanUNet) provided by NVIDIA, a model designed for cleaning and enhancing the audio before running speech recognition. The model enhaces the quality of the audio by removing noise and enhancing the speech. The 
+- `sample rate`: The sample rate of the audio data. We set this parameter to `16000` Hz as in the training data provided by the competition.
+- `normalize`: Whether to normalize the Mel spectrograms. We set this parameter to `per_feature` to normalize each feature independently.
+- `window size`: The size of the window used to compute the Mel spectrograms. We set this parameter to `0.025` seconds.
+- `window stride`: The stride (in seconds) between successive windows during STFT (Short Time Fourier Transform). We used a stride of `0.01` seconds.
+- `window`: The type of window function applied to each audio frame before computing the Fourier transform. "hann" specifies the Hann window, which helps minimize the spectral leakage.
+- `features`: The number of Mel frequency bands (or features) to generate. We used 80 features, which is typical for ASR tasks.
+- `n_fft`: The number of points used in the FFT (Fast Fourier Transform) to calculate the spectrogram. A value of 512 is used throughout the whole experiments.
+
+## Data Augmentation
+To mitigate the effects of overfitting and improve the model's robustness given limited training data, we employed data augmentation techniques. More specifically, we use spectogram augmentation and dithering.
+
+### Spectrogram Augmentation
+We used Spectrogram augmentation which is a technique used to make the model more robust by adding variability to the training data. This method modifies the spectrograms of the audio inputs to simulate variations that could occur in real-world data. We mainly tune four hyperparameters:
+
+- `Frequency Masks`: The number of frequency masks to apply. This parameter controls the number of frequency channels to mask.
+- `Time Masks`: The number of time masks to apply. This parameter controls the number of time steps to mask.
+- `Freq Width`: The width of the frequency mask, which is 27. This defines the number of frequency channels to mask.
+- `Time Width`: The width of the time mask, which is 0.05. This defines the proportion of the time axis to mask.
+
+Those parameters are changed depending on each phase of training phases as explained in [Training](#training) section.
+### Dithering
+Dithering is a technique used in digital signal processing to add a low level of noise to an audio signal. This noise can help mask quantization errors and make the audio signal more robust. dithering helped us in improving the generalization of the model. We mainly set dithering = 0.00001 in all of our experiments.
+
+### Exploration of Other Data Augmentation
+We explored other data augmentation techniques as reverberation which simulates the effects of audio reverberating in various environments. Moreover, we explored noise perturbation which refers to the addition of synthetic noise to an audio signal, in our case, we used additive white noise. However, we found that these techniques prevented the model from learning the training data effectively and did not improve the model's performance. We believe that excess data augmentation did not help the model in learning the training data effectively.
 
 ## Synthetic Dataset Generation
 
@@ -188,30 +237,64 @@ where:
 
 You can find the [synthetic.csv](data/synthetic.csv) file containing the generated transcripts and their corresponding audio files in the `data` directory. Also don't forget to download the audio files from [Google Drive](https://drive.google.com/drive/folders/1jRb0X9_O6p6UOpIyZ2NoxF1_mjYbty4M?usp=sharing).
 
-## Training
-We provide a script to train the ASR model using the FastConformer architecture. The script is based on the NVIDIA NeMo toolkit and is provided in the `train.py` file. The script trains the model using the CTC loss function and the Adam optimizer. The model is trained on the synthetic dataset and fine-tuned on the real dataset provided by the competition. You should provide the path to the training and adaptation datasets using the `--train_csv`, `--train_data_path`, `--adapt_csv` and `--adapt_data_path` arguments.
+## Chosen Architecture
 
-```bash
-python train.py  --train_csv "data/train.csv" \
-                 --train_data_path "data/train" \
-                 --adapt_csv "data/adapt.csv" \
-                 --adapt_data_path "data/adapt"
-```
+## Training
+The intuition behind using a four-stage pipeline for training the FastConformer model on Egyptian Arabic ASR stems from a strategic approach to gradually and effectively adapt the model to the complexities of the language **given limited data**. The four stages which are: pretraining on synthetic data, training on real data with CTC, training on real data with RNN-T, and fine-tuning on adaptation data—each serve a distinct purpose in refining the model's capabilities.
+
+### 1. Pretraining FastConformer-CTC on Synthetic Data
+Starting with pretraining on synthetic data, we aim to provide the model with a broad and diverse exposure to the phonetic patterns and acoustic variations in Egyptian Arabic. Synthetic data, generated using OpenAI's GPT-4o and TTS help the model learn fundamental phonetic structures. This stage helps initialize the model's parameters in a meaningful way, establishing a robust foundation that aids in better generalization during subsequent stages.
+
+### 2. Training FastConformer-CTC on Real Data
+The second stage, training on real data with Connectionist Temporal Classification (CTC), is crucial for further refining the model's understanding of natural speech. The CTC loss function is particularly effective for sequence-to-sequence tasks where the alignment between input (audio) and output (transcription) is not known a priori. By focusing initially on CTC, we allow the model to learn a reliable alignment and decoding process, improving its capability to handle varying lengths of input sequences and their corresponding transcriptions. This phase solidifies the model's ability to generalize from synthetic to real data, ensuring it can accurately capture the nuances of real-world speech patterns.
+
+### 3. Training FastConformer-Transducer on Real Data
+Transitioning to the third stage, we train the model using the Recurrent Neural Network Transducer (RNN-T) loss on real data. The RNN-T loss function is designed to better handle the temporal dependencies inherent in speech data, providing a more sophisticated approach to sequence modeling than CTC. This stage builds on the model's initial alignment learned during the CTC phase, enhancing its ability to accurately predict sequences and further refining its performance by leveraging the temporal dynamics of the speech data.
+
+
+### 4. Fine-tuning FastConformer-Transducer on Adaptation Data
+Finally, the fine-tuning stage on adaptation data ensures that the model can adapt to specific characteristics or distributions that may be unique to the test set. Fine-tuning allows for subtle adjustments to the model, improving its accuracy and robustness in real-world deployment scenarios. It is worth noting that the model is fine-tuned on both train and adapt dataset due to limited number of samples in the adapt dataset alone.
+
+
+This phased approach, from synthetic data pretraining to targeted fine-tuning, ensures that the model is well-prepared to handle the complexities of Egyptian Arabic ASR with high accuracy given limited training data.
+
 
 ## Inference
 To replicate our inference results, `inference.py` is provided.
 
-The script downlads the checkpoints from google drive, transcribes audio files found in `data_dir` using `enhancement` and `asr` models and outputs the results in `csv format`.
+The script downlads the checkpoints from google drive, transcribes audio files found in `data_dir` using specified `asr` model and outputs the results in `csv format`.
 
 The checkpoints can be found [here](https://drive.google.com/drive/u/6/folders/11-oGdeyNT6pFJaf-_BqVE4PIUoqB2acU).
 ### Example Usage
 ```bash
 python inference.py --asr_model asr_model.ckpt \
-                    --enhancement_model cleanunet.pt \
-                    --data_dir /content/test \
+                    --data_dir test \
                     --output results.csv
 ```
 For more information, use `inference.py -h`.
+
+## Insights
+- BPE Tokenizer vs. Unigram Tokenizer
+  - The BPE (Byte Pair Encoding) tokenizer outperformed the unigram tokenizer in our experiments.
+  - Our interpretation BPE tokenizer's ability to handle subword units more effectively might have contributed to better performance, especially given the diverse phonetic structure of the Egyptian Arabic dialect.
+
+
+- Performance Variability with Tokenizer Choice and Vocabulary Size
+  - The performance of our model varied significantly based on the choice of tokenizer and the size of the vocabulary.
+  - This suggests that the right combination of tokenizer and vocabulary size is crucial for optimizing ASR performance, indicating a need for careful experimentation and tuning in these areas.
+
+- Effectiveness of Synthetic Data for Pretraining
+  - Pretraining on synthetic data improved the model's performance, even though the data was not the most realistic.
+  - Our interpretation suggests that synthetic data helped the model to capture basic Arabic phonemes and provided a good initial learning phase, which was crucial given the small size of the real dataset.
+
+- Training Challenges with Fast Conformer
+  - The Fast Conformer model required a large number of epochs to start converging.
+  - This could be attributed to the complexity and size of the dataset. The small and challenging nature of the data might have made it difficult for the model to learn patterns quickly.
+
+- Faster Convergence on Synthetic Data:
+  - The model converged much faster on the synthetic data compared to the real dataset.
+  - Our interpretation is that the synthetic data, being more consistent and possibly less noisy, allowed the model to learn more efficiently in the initial phases of training.
+
 
 ## Example Usage for Other Functionalities
 
