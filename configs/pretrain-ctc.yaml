@@ -7,7 +7,7 @@ model:
   skip_nan_grad: false
 
   train_ds:
-    manifest_filepath: manifest_files/train_manifest.json
+    manifest_filepath: manifest_files/synthetic_manifest.json
     sample_rate: ${model.sample_rate}
     batch_size: 16
     shuffle: true
