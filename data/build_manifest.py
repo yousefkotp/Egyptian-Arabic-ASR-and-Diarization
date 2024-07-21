@@ -26,13 +26,12 @@ def build_manifest(data_path, output_path, filename, split, take=-1):
                         "text": data[1]
                     }
                     json.dump(sample, fout, ensure_ascii = False)
-                    fout.write("\n") 
+                    fout.write("\n")
                     if take > 0:
                         take -= 1
                     if take == 0:
                         break
                 except:
-                    print(f"Error processing {sample_path}")
                     continue
 
 build_manifest("data", "manifest_files", "train_manifest.json", "train")

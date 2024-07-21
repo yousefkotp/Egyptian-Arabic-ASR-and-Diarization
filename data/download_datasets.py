@@ -28,14 +28,13 @@ extract_to = 'data'
 download_and_unzip(gdrive_url, download_path, extract_to)
 print("-" * 50)
 
-
-print("Downloading Real Dataset...")    
-gdrive_url = "https://drive.google.com/file/d/1-NGFwvaD6vT6p87vb8n_sREWaefPEzbv/view?usp=sharing"
+print("Downloading Real Dataset...")
+gdrive_url = "https://drive.google.com/file/d/154GwOvpgk-MPyQVLBYRGvg85FetxYBJo/view?usp=sharing"
 download_path = 'data'
 extract_to = 'data'
 download_and_unzip(gdrive_url, download_path, extract_to)
 print("-" * 50)
-print("Finished downloading datasets.")
+
 
 print("Downloading test dataset...")
 gdrive_url = "https://drive.google.com/file/d/1hSQriqeMZVOXptzr623qY9-nRB2TZmhR/view?usp=sharing"
