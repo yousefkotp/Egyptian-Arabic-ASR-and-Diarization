@@ -11,7 +11,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 def load_asr_model(ckpt_path):
     if(not os.path.exists(ckpt_path)):
-        url = "https://drive.google.com/file/d/1dI86BSU6sqIP8PzkHrhcc8F57DQJvG1_/view?usp=drive_link"
+        url = "https://drive.google.com/file/d/1faLSvzXVcZd_lvBXxxdWYyBGyGnC2ijL/view?usp=sharing"
         gdown.download(url, ckpt_path, quiet=False, fuzzy=True)
 
     config_path = 'configs/FC-transducer-inference.yaml'

@@ -1,6 +1,6 @@
 # ASR For Egyptian Dialect
 
-This repository is the submission from the Speech Squad team for the MTC-AIC 2 challenge. It contains the code for our experiments in training an Automatic Speech Recognition (ASR) model for the Egyptian dialect. We propose a novel four-stage training pipeline that enabled our model to achieve a Mean Levenshtein Distance score of `10.250869` on the test set, with lower values indicating better performance. Our model utilizes the FastConformer architecture and incorporates both Connectionist Temporal Classification (CTC) and Recurrent Neural Network Transducer (RNN-T). The four stages of our pipeline include pretraining on a synthetic dataset generated using GPT-4o and OpenAI's Text-to-Speech (TTS), followed by training on the real dataset with CTC, further training with RNN-T, and finally fine-tuning on adaptation data. This comprehensive approach allowed us to maximize the model's performance and adaptability to the Egyptian Arabic dialect.
+This repository is the submission from the Speech Squad team for the MTC-AIC 2 challenge. It contains the code for our experiments in training an Automatic Speech Recognition (ASR) model for the Egyptian dialect. We propose a novel four-stage training pipeline that enabled our model to achieve a Mean Levenshtein Distance score of `9.588644` on the test set which could be viewed as character error rate. Our model utilizes the FastConformer architecture with 32 million parameter to train and incorporates both Connectionist Temporal Classification (CTC) and Recurrent Neural Network Transducer (RNN-T). The four stages of our pipeline include pretraining on a synthetic dataset generated using GPT-4o and OpenAI's Text-to-Speech (TTS), followed by training on the real dataset with CTC, further training with RNN-T, and finally fine-tuning on adaptation data. This comprehensive approach allowed us to maximize the model's performance and adaptability to the Egyptian Arabic dialect.
 
 
 ## Table of Contents
@@ -11,7 +11,6 @@ This repository is the submission from the Speech Squad team for the MTC-AIC 2 c
     + [Activate the virtual environment](#activate-the-virtual-environment)
     + [Install the required packages](#install-the-required-packages)
     + [Installing other requirements](#installing-other-requirements)
-    + [Install numpy](#install-numpy)
     + [Dataset Download & Setup](#dataset-download---setup)
   * [Dataset](#dataset)
     + [Real](#real)
@@ -36,6 +35,7 @@ This repository is the submission from the Speech Squad team for the MTC-AIC 2 c
     + [4. Fine-tuning FastConformer-Transducer on Adaptation Data](#4-fine-tuning-fastconformer-transducer-on-adaptation-data)
   * [Inference](#inference)
     + [Example Usage](#example-usage)
+    + [Changes in Decoding Strategy](#changes-in-decoding-strategy)
   * [Insights](#insights)
   * [Example Usage for Other Functionalities](#example-usage-for-other-functionalities)
     + [Generate Speaker Embeddings](#generate-speaker-embeddings)
@@ -91,10 +91,6 @@ sudo apt-get install -y sox libsndfile1 ffmpeg
   - [SoX](http://sox.sourceforge.net/)
   - [FFmpeg](https://ffmpeg.org/)
 
-### Install numpy
-```bash
-pip install "numpy<2.0"
-```
 
 ### Dataset Download & Setup
 Before downloading the datasets, ensure you have sufficient storage space available (~25 GB) and you are connected to a stable internet connection. Datasets are large and may take time to download.
@@ -176,6 +172,7 @@ We used Spectrogram augmentation which is a technique used to make the model mor
 - `Time Width`: The width of the time mask, which is 0.05. This defines the proportion of the time axis to mask.
 
 Those parameters are changed depending on each phase of training phases as explained in [Training](#training) section.
+
 ### Dithering
 Dithering is a technique used in digital signal processing to add a low level of noise to an audio signal. This noise can help mask quantization errors and make the audio signal more robust. dithering helped us in improving the generalization of the model. We mainly set dithering = 0.00001 in all of our experiments.
 
@@ -240,38 +237,75 @@ You can find the [synthetic.csv](data/synthetic.csv) file containing the generat
 ## Chosen Architecture
 
 ## Training
-The intuition behind using a four-stage pipeline for training the FastConformer model on Egyptian Arabic ASR stems from a strategic approach to gradually and effectively adapt the model to the complexities of the language **given limited data**. The four stages which are: pretraining on synthetic data, training on real data with CTC, training on real data with RNN-T, and fine-tuning on adaptation data—each serve a distinct purpose in refining the model's capabilities.
+The intuition behind using a four-stage pipeline for training the FastConformer model on Egyptian Arabic ASR stems from the idea to gradually and effectively adapt the model to the complexities of the Egyptian language **given limited data**. The four stages which are: pretraining on synthetic data, training on real data with CTC, training on real data with RNN-T, and fine-tuning on adaptation data. Each serve a distinct purpose in refining the model.
 
 ### 1. Pretraining FastConformer-CTC on Synthetic Data
 Starting with pretraining on synthetic data, we aim to provide the model with a broad and diverse exposure to the phonetic patterns and acoustic variations in Egyptian Arabic. Synthetic data, generated using OpenAI's GPT-4o and TTS help the model learn fundamental phonetic structures. This stage helps initialize the model's parameters in a meaningful way, establishing a robust foundation that aids in better generalization during subsequent stages.
 
+In this stage, we maximized data augmentation because the data generated were easy to learn by Fast Conformer model. The exact training cofinguration can be found in [pretrain-ctc.yaml](configs/pretrain-ctc.yaml) file.
+
+To train the model on this stage, run the following command:
+
+```bash
+python train/fast_conformer_ctc_pretrain.py 
+```
+
 ### 2. Training FastConformer-CTC on Real Data
-The second stage, training on real data with Connectionist Temporal Classification (CTC), is crucial for further refining the model's understanding of natural speech. The CTC loss function is particularly effective for sequence-to-sequence tasks where the alignment between input (audio) and output (transcription) is not known a priori. By focusing initially on CTC, we allow the model to learn a reliable alignment and decoding process, improving its capability to handle varying lengths of input sequences and their corresponding transcriptions. This phase solidifies the model's ability to generalize from synthetic to real data, ensuring it can accurately capture the nuances of real-world speech patterns.
+The second stage, training on real data with Connectionist Temporal Classification (CTC), is crucial for further refining the model's understanding of natural speech. The CTC loss function is particularly effective for sequence-to-sequence tasks where the alignment between input (audio) and output (transcription) is not known. By focusing initially on CTC, we allow the model to learn a reliable alignment and decoding process, improving its capability to handle varying lengths of input sequences and their corresponding transcriptions. This stage builds on the model's pretraining on synthetic data, enhancing its ability to recognize and transcribe Egyptian Arabic speech patterns specially for the alignment between the audio and the transcript which is mainly not captured in Transducer.
+
+The exact training cofinguration can be found in [train-ctc.yaml](configs/train-ctc.yaml) file.
+
+To train the model on this stage, run the following command:
+
+```bash
+python train/fast_conformer_ctc_train.py
+```
 
 ### 3. Training FastConformer-Transducer on Real Data
-Transitioning to the third stage, we train the model using the Recurrent Neural Network Transducer (RNN-T) loss on real data. The RNN-T loss function is designed to better handle the temporal dependencies inherent in speech data, providing a more sophisticated approach to sequence modeling than CTC. This stage builds on the model's initial alignment learned during the CTC phase, enhancing its ability to accurately predict sequences and further refining its performance by leveraging the temporal dynamics of the speech data.
+Transitioning to the third stage, we transfer the encoder learnt from previous two pipelines and uses new decoder and then we train the while model using the Recurrent Neural Network Transducer (RNN-T) loss on real data. The RNN-T loss function is designed to better handle the temporal dependencies inherent in speech data which is not captured in CTC. This stage builds on the model's initial alignment learned during the CTC phase, enhancing its ability to accurately predict sequences and further refining its performance by leveraging the temporal structure of the transcript.
 
+The exact training cofinguration can be found in [train-transducer.yaml](configs/train-transducer.yaml) file.
+
+To train the model on this stage, run the following command:
+
+```bash
+python train/fast_conformer_transducer_train.py --checkpoint_path "/path/to/your/checkpoint.ckpt"
+```
+
+Where: 
+- `--checkpoint_path`: The path to the checkpoint file from the previous stage whose encoder will be transferred to the new model.
 
 ### 4. Fine-tuning FastConformer-Transducer on Adaptation Data
-Finally, the fine-tuning stage on adaptation data ensures that the model can adapt to specific characteristics or distributions that may be unique to the test set. Fine-tuning allows for subtle adjustments to the model, improving its accuracy and robustness in real-world deployment scenarios. It is worth noting that the model is fine-tuned on both train and adapt dataset due to limited number of samples in the adapt dataset alone.
+Finally, the fine-tuning stage on adaptation data ensures that the model can adapt to specific characteristics or distributions that may be unique to the test set. It is worth noting that the model is fine-tuned on both train and adapt dataset due to limited number of samples in the adapt dataset alone which would lead to overfitting. This stage allows the model to refine its predictions and improve its performance on the test set by learning from the adaptation data. 
 
+The exact training cofinguration can be found in [adapt-transducer](configs/adapt-transducer.yaml) file.
+
+To train the model on this stage, run the following command:
+
+```bash
+
+python train/fast_conformer_transducer_finetune.py
+```
 
 This phased approach, from synthetic data pretraining to targeted fine-tuning, ensures that the model is well-prepared to handle the complexities of Egyptian Arabic ASR with high accuracy given limited training data.
 
 
 ## Inference
-To replicate our inference results, `inference.py` is provided.
+To replicate our inference results, `inference/inference.py` is provided.
 
-The script downlads the checkpoints from google drive, transcribes audio files found in `data_dir` using specified `asr` model and outputs the results in `csv format`.
+The script downlads the checkpoints from google drive if it is not downloaded, transcribes audio files found in `data_dir` using specified `asr` model and outputs the results in `csv format`.
 
-The checkpoints can be found [here](https://drive.google.com/drive/u/6/folders/11-oGdeyNT6pFJaf-_BqVE4PIUoqB2acU).
+The checkpoint can be found [here](https://drive.google.com/file/d/1faLSvzXVcZd_lvBXxxdWYyBGyGnC2ijL/view?usp=sharing).
 ### Example Usage
 ```bash
-python inference.py --asr_model asr_model.ckpt \
+python inference/inference.py --asr_model asr_model.ckpt \
                     --data_dir test \
                     --output results.csv
 ```
-For more information, use `inference.py -h`.
+For more information, use `inference.py -h`. Feel free to write name of a checkpoint that doesn't exist yet, the script will download it for you.
+
+### Changes in Decoding Strategy
+During inference, we change the decoding strategy from `greedy` to `beam` with `beam_width=5` to improve the model's performance. This further improves results by considering multiple hypotheses during decoding not only the most probable one. `greedy` decoding is only used during training for all phases to speed up the training process and reduce the computational cost.
 
 ## Insights
 - BPE Tokenizer vs. Unigram Tokenizer
@@ -291,7 +325,7 @@ For more information, use `inference.py -h`.
   - The Fast Conformer model required a large number of epochs to start converging.
   - This could be attributed to the complexity and size of the dataset. The small and challenging nature of the data might have made it difficult for the model to learn patterns quickly.
 
-- Faster Convergence on Synthetic Data:
+- Faster Convergence on Synthetic Data
   - The model converged much faster on the synthetic data compared to the real dataset.
   - Our interpretation is that the synthetic data, being more consistent and possibly less noisy, allowed the model to learn more efficiently in the initial phases of training.
 
