@@ -283,7 +283,6 @@ The exact training cofinguration can be found in [adapt-transducer](configs/adap
 To train the model on this stage, run the following command:
 
 ```bash
-
 python train/fast_conformer_transducer_finetune.py
 ```
 
@@ -305,7 +304,7 @@ python inference/inference.py --asr_model asr_model.ckpt \
 For more information, use `inference.py -h`. Feel free to write name of a checkpoint that doesn't exist yet, the script will download it for you.
 
 ### Changes in Decoding Strategy
-During inference, we change the decoding strategy from `greedy` to `beam` with `beam_width=5` to improve the model's performance. This further improves results by considering multiple hypotheses during decoding not only the most probable one. `greedy` decoding is only used during training for all phases to speed up the training process and reduce the computational cost.
+During inference, we change the decoding strategy from `greedy` to `beam` with `beam_size=5` to improve the model's performance. This further improves results by considering multiple hypotheses during decoding not only the most probable one. `greedy` decoding is only used during training for all phases to speed up the training process and reduce the computational cost.
 
 ## Insights
 - BPE Tokenizer vs. Unigram Tokenizer
@@ -328,6 +327,24 @@ During inference, we change the decoding strategy from `greedy` to `beam` with `
 - Faster Convergence on Synthetic Data
   - The model converged much faster on the synthetic data compared to the real dataset.
   - Our interpretation is that the synthetic data, being more consistent and possibly less noisy, allowed the model to learn more efficiently in the initial phases of training.
+
+- Too much augmentation is terrible
+  - We found that excessive data augmentation, such as reverberation and noise perturbation, did not improve the model's performance. Moreover, the more we incread spectrogram augmentation, the more the model is not able to learn anything at all where WER will be very high and not able to decrease.
+  - This suggests that a balance in data augmentation is crucial to prevent overfitting and ensure effective learning especially when the data is limited.
+
+- Importance of Fine-tuning on Adaptation Data
+  - Fine-tuning on adaptation data was crucial for improving the model's performance on the test set.
+  - Our interpretation is that the adaptation data comes from the same distribution as the test set, allowing the model to learn specific characteristics that are essential for accurate predictions which enabled such high accuracy on the test set.
+
+- CTC vs. RNN-T Loss Functions
+  - The CTC loss function was effective in the initial stages of training, allowing the model to learn alignment. However, it reached a plateau in performance where the model was not able to learn more from the data. Moreover, the model was mostly outputing jebberish words due to not taking into account the temporal dependencies in the data (context).
+  - The RNN-T loss function, on the other hand, was more effective in capturing the temporal dependencies in the data, leading to better performance in the later stages of training.
+
+- Importance of Decoding Strategy
+  - `Beam` strategy with `beam_size=5` boosted the performance much more than the `greedy` strategy. However, it is not computationally feasible to train the model with `beam` strategy due to the high computational cost.
+  - This suggests that considering multiple hypotheses during decoding is crucial for improving the model's performance but should not be used during training due to the high computational cost.
+
+
 
 
 ## Example Usage for Other Functionalities
