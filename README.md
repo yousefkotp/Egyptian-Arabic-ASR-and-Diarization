@@ -33,6 +33,7 @@ This repository is the submission from the Speech Squad team for the MTC-AIC 2 c
     + [2. Training FastConformer-CTC on Real Data](#2-training-fastconformer-ctc-on-real-data)
     + [3. Training FastConformer-Transducer on Real Data](#3-training-fastconformer-transducer-on-real-data)
     + [4. Fine-tuning FastConformer-Transducer on Adaptation Data](#4-fine-tuning-fastconformer-transducer-on-adaptation-data)
+    + [Learning Rate Schedule](#learning-rate-schedule)
   * [Inference](#inference)
     + [Example Usage](#example-usage)
     + [Changes in Decoding Strategy](#changes-in-decoding-strategy)
@@ -295,6 +296,9 @@ Where:
 This phased approach, from synthetic data pretraining to targeted fine-tuning, ensures that the model is well-prepared to handle the complexities of Egyptian Arabic ASR with high accuracy given limited training data.
 
 - **Note:** Every checkpoint for each one of the stages can be found in this [Google Drive link](https://drive.google.com/drive/folders/1bQ-k6o9B7qlvNO6vujZGnpf2XwI9V8zB?usp=sharing). It is highly advised to proceed with only the last checkpoint of the last stage (`asr_model.ckpt`) if you want to further fine-tune it infere with it which could be found [here](https://drive.google.com/file/d/1faLSvzXVcZd_lvBXxxdWYyBGyGnC2ijL/view?usp=sharing).
+
+### Learning Rate Schedule
+We use Cosine Annealing learning rate schedule for all training phases. This schedule is effective in preventing the model from overshooting while converging fast. The learning rate is gradually decreased over the course of training, allowing the model to explore a wider range of solutions and converge to a better optimum. This was extremly helpful during the last stage of training where the model was able to learn more from the adaptation data.
 
 ## Inference
 To replicate our inference results, `inference/inference.py` is provided.
