@@ -1,0 +1,213 @@
+name: "FastConformer-Transducer-BPE"
+
+model:
+  sample_rate: 16000
+  compute_eval_loss: false
+  log_prediction: true 
+  rnnt_reduction: 'mean_volume'
+  skip_nan_grad: false
+
+  model_defaults:
+    enc_hidden: ${model.encoder.d_model}
+    pred_hidden: 640
+    joint_hidden: 640
+
+  train_ds:
+    manifest_filepath: manifest_files/train_manifest.json
+    sample_rate: ${model.sample_rate}
+    batch_size: 32
+    shuffle: true
+    num_workers: 4
+    pin_memory: true
+    max_duration: 16.7
+    min_duration: 0.1
+    is_tarred: false
+    tarred_audio_filepaths: null
+    shuffle_n: 2048
+    bucketing_strategy: "fully_randomized"
+    bucketing_batch_size: null
+
+  validation_ds:
+    manifest_filepath: manifest_files/adapt_manifest.json
+    sample_rate: ${model.sample_rate}
+    batch_size: 32
+    shuffle: false
+    use_start_end_token: false
+    num_workers: 4
+    pin_memory: true
+
+  test_ds:
+    manifest_filepath: null
+    sample_rate: ${model.sample_rate}
+    batch_size: 16
+    shuffle: false
+    use_start_end_token: false
+    num_workers: 8
+    pin_memory: true
+
+  tokenizer:
+    dir: tokenizer
+    type: bpe  
+
+  preprocessor:
+    _target_: nemo.collections.asr.modules.AudioToMelSpectrogramPreprocessor
+    sample_rate: ${model.sample_rate}
+    normalize: "per_feature"
+    window_size: 0.025
+    window_stride: 0.01
+    window: "hann"
+    features: 80
+    n_fft: 512
+    frame_splicing: 1
+    dither: 0.00001
+    pad_to: 0
+
+  spec_augment:
+    _target_: nemo.collections.asr.modules.SpectrogramAugmentation
+    freq_masks: 2
+    time_masks: 3
+    freq_width: 10
+    time_width: 0.05
+
+  encoder:
+    _target_: nemo.collections.asr.modules.ConformerEncoder
+    feat_in: ${model.preprocessor.features}
+    feat_out: -1 
+    n_layers: 16
+    d_model: 256
+
+    # Sub-sampling parameters
+    subsampling: dw_striding 
+    subsampling_factor: 8 
+    subsampling_conv_channels: 256 
+    causal_downsampling: false
+
+    reduction: null 
+    reduction_position: null 
+    reduction_factor: 1
+
+    # Feed forward module's params
+    ff_expansion_factor: 4
+
+    # Multi-headed Attention Module's params
+    self_attention_model: rel_pos 
+    n_heads: 4 
+    att_context_size: [-1, -1] 
+    att_context_style: regular 
+    xscaling: true 
+    untie_biases: true 
+    pos_emb_max_len: 5000
+
+    # Convolution module's params
+    conv_kernel_size: 9
+    conv_norm_type: 'batch_norm' 
+    conv_context_size: null
+
+    ### regularization
+    dropout: 0.1 
+    dropout_pre_encoder: 0.1 
+    dropout_emb: 0.0
+    dropout_att: 0.1 
+
+    # set to non-zero to enable stochastic depth
+    stochastic_depth_drop_prob: 0.0
+    stochastic_depth_mode: linear 
+    stochastic_depth_start_layer: 1
+
+  decoder:
+    _target_: nemo.collections.asr.modules.RNNTDecoder
+    normalization_mode: null 
+    random_state_sampling: false 
+    blank_as_pad: true
+
+    prednet:
+      pred_hidden: ${model.model_defaults.pred_hidden}
+      pred_rnn_layers: 1
+      t_max: null
+      dropout: 0.2
+
+  joint:
+    _target_: nemo.collections.asr.modules.RNNTJoint
+    log_softmax: null
+    preserve_memory: false 
+    fuse_loss_wer: true
+    fused_batch_size: 4
+
+    jointnet:
+      joint_hidden: ${model.model_defaults.joint_hidden}
+      activation: "relu"
+      dropout: 0.2
+
+  decoding:
+    strategy: "greedy_batch"
+
+    # greedy strategy config
+    greedy:
+      max_symbols: 10
+
+    # beam strategy config
+    beam:
+      beam_size: 2
+      return_best_hypothesis: False
+      score_norm: true
+      tsd_max_sym_exp: 50
+      alsd_max_target_len: 2.0
+
+  loss:
+    loss_name: "default"
+
+    warprnnt_numba_kwargs:
+      fastemit_lambda: 0.0
+      clamp: -1.0
+
+  optim:
+    name: adamw
+    lr: 1e-3
+    betas: [0.9, 0.98]
+    weight_decay: 1e-3
+
+    sched:
+      name: CosineAnnealing
+      warmup_steps: 0
+      warmup_ratio: null
+      min_lr: 5e-4
+
+trainer:
+  devices: -1
+  num_nodes: 1
+  max_epochs: 500
+  max_steps: -1
+  val_check_interval: 1.0
+  accelerator: auto
+  strategy: ddp
+  accumulate_grad_batches: 1
+  gradient_clip_val: 0.0
+  precision: 32
+  log_every_n_steps: 10
+  enable_progress_bar: True
+  num_sanity_val_steps: 0
+  check_val_every_n_epoch: 1
+  sync_batchnorm: true
+  enable_checkpointing: False
+  logger: false
+  benchmark: false
+
+
+exp_manager:
+  exp_dir: null
+  name: ${name}
+  create_tensorboard_logger: true
+  create_checkpoint_callback: true
+  checkpoint_callback_params:
+    monitor: "val_wer"
+    mode: "min"
+    save_top_k: 5
+    always_save_nemo: True 
+  resume_from_checkpoint: null
+  resume_if_exists: false
+  resume_ignore_no_checkpoint: false
+
+  create_wandb_logger: false
+  wandb_logger_kwargs:
+    name: null
+    project: null

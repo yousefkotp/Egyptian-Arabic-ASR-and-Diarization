@@ -1,8 +1,8 @@
 data/*
-!data/*.csv
-!data/*.tsv
 !data/*.txt
+!data/*.py
 out.txt
 text_corpus/*
 __pycache__/
 lightning_logs/*
+archive/*
