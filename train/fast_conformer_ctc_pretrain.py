@@ -17,7 +17,7 @@ logging.getLogger('nemo_logger').setLevel(logging.ERROR)
 
 wandb_logger = WandbLogger(project="AIC-ASR", name="000_CTC_Pretraining")
 
-trainer = pl.Trainer(logger=wandb_logger, max_epochs=20)
+trainer = pl.Trainer(logger=wandb_logger, max_epochs=500) # We stop at 15 epochs only
 
 conf = OmegaConf.create(params)
 

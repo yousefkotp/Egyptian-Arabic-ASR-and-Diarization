@@ -25,7 +25,7 @@ params['model'].pop('test_ds')
 
 wandb_logger = WandbLogger(project="AIC-ASR", name="005_FastConformerM_transd")
 
-trainer = pl.Trainer(max_epochs=70, logger=wandb_logger, check_val_every_n_epoch=1)
+trainer = pl.Trainer(max_epochs=500, logger=wandb_logger, check_val_every_n_epoch=1) # We stop at ~85 epochs only
 
 conf = OmegaConf.create(params)
 print(OmegaConf.to_yaml(conf, resolve=True))

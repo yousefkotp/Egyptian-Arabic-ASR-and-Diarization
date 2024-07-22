@@ -3,8 +3,14 @@ import pytorch_lightning as pl
 from pytorch_lightning.loggers import WandbLogger
 import nemo.collections.asr as nemo_asr
 from ruamel.yaml import YAML
+import argparse
+import torch
 
-config_path = 'FC-transducer.yaml'
+parser = argparse.ArgumentParser(description='Training Script')
+parser.add_argument('--checkpoint_path', type=str, default=None, help='Path to the model checkpoint')
+args = parser.parse_args()
+
+config_path = 'configs/adapt-transducer.yaml'
 
 yaml = YAML(typ='safe')
 with open(config_path) as f:
@@ -19,7 +25,15 @@ trainer = pl.Trainer(max_epochs=500, logger=wandb_logger, check_val_every_n_epoc
 
 conf = OmegaConf.create(params)
 print(OmegaConf.to_yaml(conf, resolve=True))
+
 model = nemo_asr.models.EncDecRNNTBPEModel(cfg=conf['model'], trainer=trainer)
+
+# Load the checkpoint if the path is provided
+if args.checkpoint_path:
+    ckpt = torch.load(args.checkpoint_path)
+    model.load_state_dict(ckpt['state_dict'])
+    print(f"Loaded model state from {args.checkpoint_path}")
+
 print(model)
 
 trainer.fit(model)

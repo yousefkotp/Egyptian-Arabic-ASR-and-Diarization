@@ -258,8 +258,11 @@ The exact training cofinguration can be found in [train-ctc.yaml](configs/train-
 To train the model on this stage, run the following command:
 
 ```bash
-python train/fast_conformer_ctc_train.py
+python train/fast_conformer_ctc_train.py --checkpoint_path "/path/to/your/checkpoint.ckpt"
 ```
+
+Where:
+- `--checkpoint_path`: The path to the checkpoint file from the previous stage.
 
 ### 3. Training FastConformer-Transducer on Real Data
 Transitioning to the third stage, we transfer the encoder learnt from previous two pipelines and uses new decoder and then we train the while model using the Recurrent Neural Network Transducer (RNN-T) loss on real data. The RNN-T loss function is designed to better handle the temporal dependencies inherent in speech data which is not captured in CTC. This stage builds on the model's initial alignment learned during the CTC phase, enhancing its ability to accurately predict sequences and further refining its performance by leveraging the temporal structure of the transcript.
@@ -283,11 +286,15 @@ The exact training cofinguration can be found in [adapt-transducer](configs/adap
 To train the model on this stage, run the following command:
 
 ```bash
-python train/fast_conformer_transducer_finetune.py
+python train/fast_conformer_transducer_finetune.py --checkpoint_path "/path/to/your/checkpoint.ckpt"
 ```
+
+Where:
+- `--checkpoint_path`: The path to the checkpoint file from the previous stage.
 
 This phased approach, from synthetic data pretraining to targeted fine-tuning, ensures that the model is well-prepared to handle the complexities of Egyptian Arabic ASR with high accuracy given limited training data.
 
+- **Note:** Every checkpoint for each one of the stages can be found in this [Google Drive link](https://drive.google.com/drive/folders/1bQ-k6o9B7qlvNO6vujZGnpf2XwI9V8zB?usp=sharing). It is highly advised to proceed with only the last checkpoint of the last stage (`asr_model.ckpt`) if you want to further fine-tune it infere with it which could be found [here](https://drive.google.com/file/d/1faLSvzXVcZd_lvBXxxdWYyBGyGnC2ijL/view?usp=sharing).
 
 ## Inference
 To replicate our inference results, `inference/inference.py` is provided.
@@ -298,7 +305,7 @@ The checkpoint can be found [here](https://drive.google.com/file/d/1faLSvzXVcZd_
 ### Example Usage
 ```bash
 python inference/inference.py --asr_model asr_model.ckpt \
-                    --data_dir test \
+                    --data_dir data/test \
                     --output results.csv
 ```
 For more information, use `inference.py -h`. Feel free to write name of a checkpoint that doesn't exist yet, the script will download it for you.
