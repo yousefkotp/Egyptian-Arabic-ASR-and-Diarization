@@ -65,8 +65,8 @@ model:
   spec_augment:
     _target_: nemo.collections.asr.modules.SpectrogramAugmentation
     freq_masks: 2
-    time_masks: 5 
-    freq_width: 15
+    time_masks: 3
+    freq_width: 10
     time_width: 0.05
 
   encoder:
@@ -162,16 +162,15 @@ model:
 
   optim:
     name: adamw
-    lr: 0.00088388347
-    # optimizer arguments
+    lr: 1e-3
     betas: [0.9, 0.98]
     weight_decay: 1e-3
 
     sched:
       name: CosineAnnealing
-      warmup_steps: 15000
+      warmup_steps: 0
       warmup_ratio: null
-      min_lr: 0.00008838834
+      min_lr: 5e-4
 
 trainer:
   devices: -1
