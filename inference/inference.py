@@ -231,3 +231,4 @@ if __name__ == "__main__":
     final_output_dir = 'diarization_VAD_ASR_results_final'
     os.makedirs(final_output_dir, exist_ok=True)
     transform_json(output_dir,final_output_dir)
+    print(f'Final outputs with desired format are located in {final_output_dir}')
