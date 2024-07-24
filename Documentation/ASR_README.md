@@ -11,7 +11,7 @@ This repository is the submission from the Speech Squad team for the MTC-AIC 2 c
     + [Activate the virtual environment](#activate-the-virtual-environment)
     + [Install the required packages](#install-the-required-packages)
     + [Installing other requirements](#installing-other-requirements)
-    + [Dataset Download & Setup](#dataset-download---setup)
+    + [Dataset Download and Setup](#dataset-download-and-setup)
   * [Dataset](#dataset)
     + [Real](#real)
     + [Synthetic](#synthetic)
@@ -93,7 +93,7 @@ sudo apt-get install -y sox libsndfile1 ffmpeg
   - [FFmpeg](https://ffmpeg.org/)
 
 
-### Dataset Download & Setup
+### Dataset Download and Setup
 Before downloading the datasets, ensure you have sufficient storage space available (~25 GB) and you are connected to a stable internet connection. Datasets are large and may take time to download.
 
 To download the datasets both real and synthetic from Google Drive, run the following commands:
@@ -236,6 +236,12 @@ where:
 You can find the [synthetic.csv](data/synthetic.csv) file containing the generated transcripts and their corresponding audio files in the `data` directory. Also don't forget to download the audio files from [Google Drive](https://drive.google.com/drive/folders/1jRb0X9_O6p6UOpIyZ2NoxF1_mjYbty4M?usp=sharing).
 
 ## Chosen Architecture
+
+Conformer-based models have shown great performance in end-to-end automatic speech recognition task. Due to their encoder architecture that integrates depth-wise convolutional layers for local features and self-attention layers for global context, conformers have gained widespread adoption in industry, particularly for real-time streaming ASR applications both on-device and in cloud environments.
+
+To boost the Conformer model's efficiency, several key changes were made to obtain FastConformer: an 8x downsampling at the encoder's start reduced subsequent attention layers' computational load by 4x. Convolutional sub-sampling layers were replaced with depthwise separable convolutions, downsampling filters were cut to 256, and kernel size was reduced to 9. These adjustments aimed to enhance efficiency while maintaining/improving model performance.
+
+We decided to use FastConformer for its fast (near real-time) inference speed without incurring any compromises in its performance. The inference speed criteria have allowed us to perform fast-paced research iterations.
 
 ## Training
 The intuition behind using a four-stage pipeline for training the FastConformer model on Egyptian Arabic ASR stems from the idea to gradually and effectively adapt the model to the complexities of the Egyptian language **given limited data**. The four stages which are: pretraining on synthetic data, training on real data with CTC, training on real data with RNN-T, and fine-tuning on adaptation data. Each serve a distinct purpose in refining the model.
