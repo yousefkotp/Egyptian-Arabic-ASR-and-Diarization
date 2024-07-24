@@ -4,7 +4,9 @@
 
 This repository is the submission from the Speech Squad team for the MTC-AIC 2 challenge. It contains the code for our experiments in training an Automatic Speech Recognition (ASR) model for the Egyptian dialect. We propose a novel four-stage training pipeline that enabled our model to achieve a Mean Levenshtein Distance score of `9.588644` on the test set which could be viewed as character error rate. Our model utilizes the FastConformer architecture with 32 million parameter to train and incorporates both Connectionist Temporal Classification (CTC) and Recurrent Neural Network Transducer (RNN-T). The four stages of our pipeline include pretraining on a synthetic dataset generated using GPT-4o and OpenAI's Text-to-Speech (TTS) which we publicly release, followed by training on the real dataset with CTC, further training with RNN-T, and finally fine-tuning on adaptation data. This comprehensive approach allowed us to maximize the model's performance and adaptability to the Egyptian Arabic dialect.
 
-For experiments done, insights gained and approaches taken in ASR and Diarization pleaser refer to [documentation](https://github.com/AbdelrhmanElnenaey/ASR_for_egyptian_dialect/tree/main/Documentation) section 
+### For the work done in Diarization pleaser refer to [Diarization Docs](https://github.com/AbdelrhmanElnenaey/ASR_for_egyptian_dialect/blob/main/Documentation/Diarization_README.md) section 
+### Worth to mention that in phase 2, there was several enhancements in the ASR model. You can review the work done in it in [ASR Docs](https://github.com/AbdelrhmanElnenaey/ASR_for_egyptian_dialect/blob/main/Documentation/ASR_README.md) section
+### To run the diarization along with the transcriptions (reproduce the results) please run [inference.ipynb](https://github.com/AbdelrhmanElnenaey/ASR_for_egyptian_dialect/blob/main/inference/inference.ipynb) notebook. Be careful of the instructions written as comments.
 
 ## Table of Contents
 - [ASR For Egyptian Dialect](#asr-for-egyptian-dialect)
