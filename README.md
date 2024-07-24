@@ -311,14 +311,14 @@ This phased approach, from synthetic data pretraining to targeted fine-tuning, e
 We use Cosine Annealing learning rate schedule for all training phases. This schedule is effective in preventing the model from overshooting while converging fast. The learning rate is gradually decreased over the course of training, allowing the model to explore a wider range of solutions and converge to a better optimum. This was extremly helpful during the last stage of training where the model was able to learn more from the adaptation data.
 
 ## Inference
-To replicate our inference results, `inference/inference.py` is provided.
+To replicate our inference results (ASR only), `inference.py` is provided.
 
 The script downlads the checkpoints from google drive if it is not downloaded, transcribes audio files found in `data_dir` using specified `asr` model and outputs the results in `csv format`.
 
 The checkpoint can be found [here](https://drive.google.com/file/d/1faLSvzXVcZd_lvBXxxdWYyBGyGnC2ijL/view?usp=sharing).
 ### Example Usage
 ```bash
-python inference/inference.py --asr_model asr_model.ckpt \
+python inference.py --asr_model asr_model.ckpt \
                     --data_dir data/test \
                     --output results.csv
 ```
