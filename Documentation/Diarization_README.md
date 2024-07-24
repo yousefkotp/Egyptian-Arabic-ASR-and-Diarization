@@ -256,10 +256,12 @@ In this experiment, we used MarbleNet's Voice Activity Detection (VAD) with diff
 | Window Size | Shift Length | DER (Without Overlap) |
 |-------------|--------------|------------------------|
 | 0.15        | 0.01         | 37.73%                 |
-| 0.63        | 0.08         | 23.15%                 |
+| 0.63        | 0.01         | 22.97%                 |
 | 0.8         | 0.05         | 23.24%                 |
-| 0.95        | 0.05         | 22.97%                 |
+| 0.95        | 0.05         | 23.03%                 |
 | 1.2         | 0.3          | 23.05%                 |
+| 0.63        | 0.05         | 22.97%                 |
+
 
 ##### Visual Results
 
@@ -293,22 +295,20 @@ In this experiment, we evaluated different speaker embedding models and their im
 
 1. **Titanet Only**
 2. **Titanet with ECAPA-TDNN (Concatenated)**
-3. **Titanet and ECAPA-TDNN with PCA (n_components=100)**
 
 ##### Results on Provided Sample
 
 | Configuration | DER (Without Overlap) |
 |---------------|------------------------|
 | Titanet Only  | 23.6%                  |
-| Titanet and ECAPA-TDNN | 23.03%            |
-| Titanet and ECAPA-TDNN with PCA | 22.97%   |
+| Titanet and ECAPA-TDNN | 22.97%            |
 
 Spectral clustering was used in this experiment to perform speaker clustering. The number of clusters can be constrained using parameters such as `max_num_speakers` and `oracle_num_speakers` in NeMo diarization configuration. If the oracle number is not provided, heuristic methods and constraints guide the clustering process.
 
 ### <a name="insights"></a> Insights
 * Applying a preprocessing step using demucs improved the diarization performance.
-* Using Titanet + Ecapa-TDNN formed a better speaker embedding representation.
-* Applying a PCA step after the embeddings generation enhanced the diarization performance.
+* Using Titanet + Ecapa-TDNN formed a better speaker embedding representation that helped with clustering later.
+* The choice of window sizes and shift lengths can greatly impact performance. Smaller segments with fine granularity might be useful for precise linguistic content, while larger segments can capture full sentences more effectively. In general, aiming for larger segments that encompass full sentences proved beneficial. Optimal results were achieved using a window size of 0.63 with shift lengths of 0.01 and 0.05.
 
 ## <a name="dataset-collection-and-synthesis-trials"></a> Dataset Collection and Synthesis Trials
 Due to the lack of datasets in the domain of speaker diarization, we tried to collect a dataset on our own to train and test our models on. We wrote a script that scraps podcast episodes from a YouTube channel, downloads the audio as wav files, and uses the transcripts with their timestamp to gather the data, resulting in a ~50hr English diarized dataset. The dataset can be found on [google drive](https://drive.google.com/drive/folders/1Xuy04CgO-5z3Ezm6nqWRi0ABiES0xBGP?usp=sharing).
