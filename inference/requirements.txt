@@ -1,0 +1,5 @@
+wget
+text-unidecode
+torchaudio==0.10.0+cpu
+gdown
+demucs
