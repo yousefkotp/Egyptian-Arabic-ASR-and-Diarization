@@ -7,6 +7,7 @@ This file is a documentation for the work exerted in diarization process for Egy
 - [Diarization for Egyptian Dialect](#diarization-for-egyptian-dialect)
   * [Introduction](#introduction)
   * [Experiments on sample data](#experiment-sample-data)
+    + [pyAudioAnalysis](#pyAudioAnalysis-experiments)
     + [PCA experiments](#pca-experiments)
     + [Embedding models experiments](#embedding-models-experiments)
     + [Window size experiments](#window-size-experiments)
@@ -14,7 +15,7 @@ This file is a documentation for the work exerted in diarization process for Egy
   * [Datasets Exploration](#datasets-exploration)
   * [Experiments on callhome test data](#experiments-callhome)
     + [Insights](#insights)
-  * [Dataset collection and synthsis trials](#dataset-collection-synthsis-trials)
+  * [Dataset Collection and Synthesis Trials](#dataset-collection-and-synthesis-trials)
   * [Insights](#insights)
   * [Contributors](#contributors)
   * [Supervisor](#supervisor)
@@ -39,6 +40,11 @@ We started with an initial pipline having the following components:
 
 ## <a name="experiments-sample-data"></a> Experiments on sample data
 We constructed our first experiments on the provided sample audio with its correponding annotation.
+
+### <a name="pyAudioAnalysis-experiments"></a> PyAudioAnalysis experiments
+PyAudioAnalysis is a Python library covering a wide range of audio analysis tasks and speaker diarization is one of them. It works by extracting short-term and mid-term audio features based on zero-crossings, energy, energy entropy, spectral centroid, spread, flux, rolloff, mfcc, and chroma features. It then does K-Means clustering by trying all possible K in range of [2, 9] and finds the optimal K that has the maximum average silhouette. It also does HMM Smoothing as a post-processing step.
+
+However, the results were very bad, having a DER of 75.31%. So, we decided to use our own pipeline and try with different clustering algorithms.
 
 ### <a name="pca-experiments"></a> PCA experiments
 First we conducted an experiment testing the pipeline performance on different clustering algorithms with and without PCA
@@ -230,7 +236,10 @@ According to the initial experiments on the sample data we can conclude the foll
 
 ### <a name="insights"></a> Insights
 
-## <a name="dataset-collection-synthsis-trials"></a> Dataset collection and synthsis trials
+## <a name="dataset-collection-and-synthesis-trials"></a> Dataset Collection and Synthesis Trials
+Due to the lack of datasets in the domain of speaker diarization, we tried to collect a dataset on our own to train and test our models on. We wrote a script that scraps podcast episodes from a YouTube channel, downloads the audio as wav files, and uses the transcripts with their timestamp to gather the data, resulting in a ~50hr English diarized dataset. The dataset can be found on [google drive](https://drive.google.com/drive/folders/1Xuy04CgO-5z3Ezm6nqWRi0ABiES0xBGP?usp=sharing).
+
+We also tried to similarly gather an Arabic dataset, but unfortunately no Arabic podcasts with a manually written transcript that can be easily scraped were found.
 
 ## <a name="insights"></a> Insights
   
