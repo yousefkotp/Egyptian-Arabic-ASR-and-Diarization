@@ -4,9 +4,9 @@
 
 This repository is the submission from the Speech Squad team for the MTC-AIC 2 challenge. It contains the code for our experiments in training an Automatic Speech Recognition (ASR) model for the Egyptian dialect. We propose a novel four-stage training pipeline that enabled our model to achieve a Mean Levenshtein Distance score of `9.588644` on the test set which could be viewed as character error rate. Our model utilizes the FastConformer architecture with 32 million parameter to train and incorporates both Connectionist Temporal Classification (CTC) and Recurrent Neural Network Transducer (RNN-T). The four stages of our pipeline include pretraining on a synthetic dataset generated using GPT-4o and OpenAI's Text-to-Speech (TTS) which we publicly release, followed by training on the real dataset with CTC, further training with RNN-T, and finally fine-tuning on adaptation data. This comprehensive approach allowed us to maximize the model's performance and adaptability to the Egyptian Arabic dialect.
 
-### For the work done in Diarization please refer to [Diarization Docs](https://github.com/AbdelrhmanElnenaey/ASR_for_egyptian_dialect/blob/main/Documentation/Diarization_README.md) section 
-### This README file represent the work done in the ASR model in phase 1 and 2
-### To run the diarization along with the transcriptions (reproduce the results) please refer to [Inference_README](https://github.com/AbdelrhmanElnenaey/ASR_for_egyptian_dialect/blob/main/inference/README.md) and [Inference](https://github.com/AbdelrhmanElnenaey/ASR_for_egyptian_dialect/tree/main/inference) section.
+- **Note:** This README file is covering the work done for ASR task. For the work done in Diarization please refer to [Diarization Docs](https://github.com/AbdelrhmanElnenaey/ASR_for_egyptian_dialect/blob/main/Documentation/Diarization_README.md) README file. 
+
+- **Note:** To run the diarization along with the transcriptions (reproduce the results) please refer to [Inference_README](https://github.com/AbdelrhmanElnenaey/ASR_for_egyptian_dialect/blob/main/inference/README.md) and [Inference](https://github.com/AbdelrhmanElnenaey/ASR_for_egyptian_dialect/tree/main/inference) section.
 
 ## Table of Contents
 - [ASR For Egyptian Dialect](#asr-for-egyptian-dialect)
