@@ -164,7 +164,7 @@ def run_diarization(manifest_file, word_ts_hyp, word_hyp):
     cfg = OmegaConf.load(CONFIG)
     cfg.diarizer.collar = 0
     cfg.diarizer.vad.parameters.window_length_in_sec = 0.63
-    cfg.diarizer.vad.parameters.shift_length_in_sec = 0.05
+    cfg.diarizer.vad.parameters.shift_length_in_sec = 0.01
     cfg.diarizer.manifest_filepath = manifest_file
     cfg.diarizer.out_dir = 'diarization_output'
     cfg.diarizer.speaker_embeddings.model_path = 'titanet_large'
