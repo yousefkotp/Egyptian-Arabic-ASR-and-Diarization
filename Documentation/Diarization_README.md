@@ -33,9 +33,9 @@ Current approaches for speaker diarization can be summarized in two main approac
 Having a scarcity in the arabic rather than the eqyptian training data and finding that the End to end approach is still not mature, we managed to go through a multi-stage (pipeline) approach 
 
 We started with an initial pipline having the following components:
-  * [Whisper large model for speech activity and change detection: it outputs the starts and ends of the audio segments to extract the embedding]
-  * [Ecapa speech embedding model]
-  * [Agglomorative Clustering where the number of speakers must be known in advance]
+  * Whisper large model for speech activity and change detection: it outputs the starts and ends of the audio segments to extract the embedding
+  * Ecapa speech embedding model
+  * Agglomorative Clustering where the number of speakers must be known in advance
 
 We constructed our first experiments on the provided sample audio with its correponding annotation.
 
