@@ -6,7 +6,7 @@ This repository is the submission from the Speech Squad team for the MTC-AIC 2 c
 
 ### For the work done in Diarization please refer to [Diarization Docs](https://github.com/AbdelrhmanElnenaey/ASR_for_egyptian_dialect/blob/main/Documentation/Diarization_README.md) section 
 ### Worth to mention that in phase 2, there was several enhancements in the ASR model. You can review the work done in it in [ASR Docs](https://github.com/AbdelrhmanElnenaey/ASR_for_egyptian_dialect/blob/main/Documentation/ASR_README.md) section
-### To run the diarization along with the transcriptions (reproduce the results) please run [inference.ipynb](https://github.com/AbdelrhmanElnenaey/ASR_for_egyptian_dialect/blob/main/inference/inference.ipynb) notebook. Be careful of the instructions written as comments.
+### To run the diarization along with the transcriptions (reproduce the results) please refer to [Inference_README](https://github.com/AbdelrhmanElnenaey/ASR_for_egyptian_dialect/blob/main/inference/README.md) and [Inference](https://github.com/AbdelrhmanElnenaey/ASR_for_egyptian_dialect/tree/main/inference) section.
 
 ## Table of Contents
 - [ASR For Egyptian Dialect](#asr-for-egyptian-dialect)
