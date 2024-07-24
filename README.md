@@ -355,8 +355,10 @@ During inference, we change the decoding strategy from `greedy` to `beam` with `
   - `Beam` strategy with `beam_size=5` boosted the performance much more than the `greedy` strategy. However, it is not computationally feasible to train the model with `beam` strategy due to the high computational cost.
   - This suggests that considering multiple hypotheses during decoding is crucial for improving the model's performance but should not be used during training due to the high computational cost.
 
-
-
+- A new state-of-the-art for Arabic speech enhancement is needed
+  - The current state-of-the-art models for Arabic speech enhancement are not well-suited for the Egyptian dialect, which has unique phonetic and linguistic characteristics.
+  - We explored different noise removal models, the best one was NVIDIA'S [CleanUNet](https://github.com/NVIDIA/CleanUNet) which was meant to remove the noise and enhance the speech. However, the model did not perform well on the Egyptian dialect test dataset and the ASR performed worse when this speech enhancer was used.
+  - We believe that developing a new state-of-the-art model for speech enhancement **specifically for the Egyptian dialect** is essential to improve ASR performance and accuracy.
 
 ## Example Usage for Other Functionalities
 
