@@ -290,11 +290,7 @@ Where:
 - `--checkpoint_path`: The path to the checkpoint file from the previous stage whose encoder will be transferred to the new model.
 
 ### 4. Fine-tuning FastConformer-Transducer on Adaptation Data
-To further improve our ASR model during the second phase, we decided to use the adapt split. 
-To avoid overfitting, we validated our model using the test set of the first phase.
-As the adaptation data was more challenging, the model was able to refine its predictions and improve its performance on the test set by learning from the adaptation data.
-
-It is worth noting that the model is fine-tuned on both train and adapt dataset due to limited number of samples in the adapt dataset alone which would lead to overfitting.
+Finally, the fine-tuning stage on adaptation data ensures that the model can adapt to specific characteristics or distributions that may be unique to the test set. It is worth noting that the model is fine-tuned on both train and adapt dataset due to limited number of samples in the adapt dataset alone which would lead to overfitting. This stage allows the model to refine its predictions and improve its performance on the test set by learning from the adaptation data.
 
 The exact training cofinguration can be found in [adapt-transducer](configs/adapt-transducer.yaml) file.
 
