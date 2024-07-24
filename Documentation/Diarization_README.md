@@ -306,6 +306,9 @@ In this experiment, we evaluated different speaker embedding models and their im
 Spectral clustering was used in this experiment to perform speaker clustering. The number of clusters can be constrained using parameters such as `max_num_speakers` and `oracle_num_speakers` in NeMo diarization configuration. If the oracle number is not provided, heuristic methods and constraints guide the clustering process.
 
 ### <a name="insights"></a> Insights
+* Applying a preprocessing step using demucs improved the diarization performance.
+* Using Titanet + Ecapa-TDNN formed a better speaker embedding representation.
+* Applying a PCA step after the embeddings generation enhanced the diarization performance.
 
 ## <a name="dataset-collection-and-synthesis-trials"></a> Dataset Collection and Synthesis Trials
 Due to the lack of datasets in the domain of speaker diarization, we tried to collect a dataset on our own to train and test our models on. We wrote a script that scraps podcast episodes from a YouTube channel, downloads the audio as wav files, and uses the transcripts with their timestamp to gather the data, resulting in a ~50hr English diarized dataset. The dataset can be found on [google drive](https://drive.google.com/drive/folders/1Xuy04CgO-5z3Ezm6nqWRi0ABiES0xBGP?usp=sharing).
