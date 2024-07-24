@@ -100,7 +100,7 @@ Arguments:
   
   `--mono_output_dir`: Directory to store mono channel output files (final dir that contains wav files after preprocessing).
   
-  `--config_path`: Path to the configuration YAML file. This is located in configs/FC-transducer-inference.yaml.
+  `--config_path`: Path to the configuration YAML file. This is located in `configs/FC-transducer-inference.yaml`.
   
 
 ### Additional Notes
