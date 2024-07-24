@@ -231,7 +231,7 @@ According to the initial experiments on the sample data we can conclude the foll
 
 
 ## <a name="experiments-callhome"></a> Experiments on callhome test data
-We constructed different experiment to converge to the best combinations and configurations for our pipeline 
+We constructed different experiment on callhome testd ata to converge to the best combination and configuration for our pipeline.
 
 <table>
   <tr>
