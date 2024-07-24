@@ -23,12 +23,21 @@ This file is a documentation for the work exerted in diarization process for Egy
 ## <a name="introduction"></a> Introduction
 Speaker Diarization is the task of segmenting and co-indexing audio recordings by speaker. in other words, diarization implies finding speaker boundaries and grouping segments that belong to the same speaker, and, as a by-product, determining the number of distinct speakers. the goal is not to identify known speakers, but to co-index segments that are attributed to the same speaker.
 
-### Aprroaches
+### Current Aprroaches
 Current approaches for speaker diarization can be summarized in two main approaches: Multi-stage (pipeline) and End to End speaker diarization
 <div>
 <img src = "https://github.com/user-attachments/assets/ab612ca6-de15-4a76-a9fc-4f8a0a794e0b" width="50%">
 <img src = "https://github.com/user-attachments/assets/f7ff23d0-d29b-4fac-9362-d69c54bd903f" width="50%">
 </div>
+
+Having a scarcity in the arabic rather than the eqyptian training data and finding that the End to end approach is still not mature, we managed to go through a multi-stage (pipeline) approach 
+
+We started with an initial pipline having the following components:
+  * [Whisper large model for speech activity and change detection: it outputs the starts and ends of the audio segments to extract the embedding]
+  * [Ecapa speech embedding model]
+  * [Agglomorative Clustering where the number of speakers must be known in advance]
+
+We constructed our first experiments on the provided sample audio with its correponding annotation.
 
 ## Contributors
 - [Abdelrahman Elnenaey](https://github.com/AbdelrhmanElnenaey)
