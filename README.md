@@ -4,7 +4,7 @@
 
 This repository is the submission from the Speech Squad team for the MTC-AIC 2 challenge. It contains the code for our experiments in training an Automatic Speech Recognition (ASR) model for the Egyptian dialect. We propose a novel four-stage training pipeline that enabled our model to achieve a Mean Levenshtein Distance score of `9.588644` on the test set which could be viewed as character error rate. Our model utilizes the FastConformer architecture with 32 million parameter to train and incorporates both Connectionist Temporal Classification (CTC) and Recurrent Neural Network Transducer (RNN-T). The four stages of our pipeline include pretraining on a synthetic dataset generated using GPT-4o and OpenAI's Text-to-Speech (TTS) which we publicly release, followed by training on the real dataset with CTC, further training with RNN-T, and finally fine-tuning on adaptation data. This comprehensive approach allowed us to maximize the model's performance and adaptability to the Egyptian Arabic dialect.
 
-### For the work done in Diarization pleaser refer to [Diarization Docs](https://github.com/AbdelrhmanElnenaey/ASR_for_egyptian_dialect/blob/main/Documentation/Diarization_README.md) section 
+### For the work done in Diarization please refer to [Diarization Docs](https://github.com/AbdelrhmanElnenaey/ASR_for_egyptian_dialect/blob/main/Documentation/Diarization_README.md) section 
 ### Worth to mention that in phase 2, there was several enhancements in the ASR model. You can review the work done in it in [ASR Docs](https://github.com/AbdelrhmanElnenaey/ASR_for_egyptian_dialect/blob/main/Documentation/ASR_README.md) section
 ### To run the diarization along with the transcriptions (reproduce the results) please run [inference.ipynb](https://github.com/AbdelrhmanElnenaey/ASR_for_egyptian_dialect/blob/main/inference/inference.ipynb) notebook. Be careful of the instructions written as comments.
 
@@ -241,6 +241,11 @@ where:
 You can find the [synthetic.csv](data/synthetic.csv) file containing the generated transcripts and their corresponding audio files in the `data` directory. Also don't forget to download the audio files from [Google Drive](https://drive.google.com/drive/folders/1jRb0X9_O6p6UOpIyZ2NoxF1_mjYbty4M?usp=sharing).
 
 ## Chosen Architecture
+Conformer-based models have shown great performance in end-to-end automatic speech recognition task. Due to their encoder architecture that integrates depth-wise convolutional layers for local features and self-attention layers for global context, conformers have gained widespread adoption in industry, particularly for real-time streaming ASR applications both on-device and in cloud environments.
+
+To boost the Conformer model's efficiency, several key changes were made to obtain FastConformer: an 8x downsampling at the encoder's start reduced subsequent attention layers' computational load by 4x. Convolutional sub-sampling layers were replaced with depthwise separable convolutions, downsampling filters were cut to 256, and kernel size was reduced to 9. These adjustments aimed to enhance efficiency while maintaining/improving model performance.
+
+We decided to use FastConformer for its fast (near real-time) inference speed without incurring any compromises in its performance. The inference speed criteria have allowed us to perform fast-paced research iterations.
 
 ## Training
 The intuition behind using a four-stage pipeline for training the FastConformer model on Egyptian Arabic ASR stems from the idea to gradually and effectively adapt the model to the complexities of the Egyptian language **given limited data**. The four stages which are: pretraining on synthetic data, training on real data with CTC, training on real data with RNN-T, and fine-tuning on adaptation data. Each serve a distinct purpose in refining the model.
