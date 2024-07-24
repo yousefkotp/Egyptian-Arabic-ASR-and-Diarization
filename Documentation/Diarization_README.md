@@ -26,8 +26,8 @@ Speaker Diarization is the task of segmenting and co-indexing audio recordings b
 ### Aprroaches
 Current approaches for speaker diarization can be summarized in two main approaches: Multi-stage (pipeline) and End to End speaker diarization
 <div>
-![Mulit-stage speaker diarization](https://github.com/user-attachments/assets/ab612ca6-de15-4a76-a9fc-4f8a0a794e0b)
-![speaker diarization end to end](https://github.com/user-attachments/assets/f7ff23d0-d29b-4fac-9362-d69c54bd903f)
+<img src = "https://github.com/user-attachments/assets/ab612ca6-de15-4a76-a9fc-4f8a0a794e0b" width="50%">
+<img src = "https://github.com/user-attachments/assets/f7ff23d0-d29b-4fac-9362-d69c54bd903f" width="50%">
 </div>
 
 ## Contributors
