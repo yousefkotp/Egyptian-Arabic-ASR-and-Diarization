@@ -101,10 +101,7 @@ sudo apt-get install -y sox libsndfile1 ffmpeg
 ### Dataset Download & Setup
 Before downloading the datasets, ensure you have sufficient storage space available (~25 GB) and you are connected to a stable internet connection. Datasets are large and may take time to download.
 
-To download the datasets both real and synthetic from Google Drive, run the following commands:
-```python
-python data/download_datasets.py
-```
+You can download real dataset from [Kaggle](https://www.kaggle.com/datasets/yousefkotp/mtc-aic-dataset/data). Synthetic dataset can be found on [Google Drive](https://drive.google.com/drive/folders/1jRb0X9_O6p6UOpIyZ2NoxF1_mjYbty4M?usp=sharing). All the downloaded data should be placed in `data` folder
 
 After downloading the datasets, you have to build the manifest files by running the following command:
 ```python
